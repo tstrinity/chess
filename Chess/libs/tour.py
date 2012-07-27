@@ -4,7 +4,7 @@ __author__ = 'tstrinity'
 
 from math import log
 
-def calculate_round_count(players_count, prize_positions):
+def calculate_tours_count(players_count, prize_positions):
     """
     функция для рассчета количество туров в турнире
     исходные данные: количество участников, количество призовых мест

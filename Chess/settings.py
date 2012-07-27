@@ -117,6 +117,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.admindocs',
     'Chess.apps.tournament',
+    'django_extensions',
 )
 
 # A sample logging configuration. The only tangible logging
