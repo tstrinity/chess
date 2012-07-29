@@ -19,12 +19,13 @@ class Tournament(models.Model):
         player_count = self._players.count()
         from Chess.libs.tour import calculate_tours_count
         tours_count = calculate_tours_count(player_count, self.prize_positions_count)
-        for tours_number in range(tours_count):
+        for tours_number in range(1, tours_count + 1):
             tour = Tour(tour_number=tours_number, tournament=self)
             tour.save()
 
     def __unicode__(self):
         return self.name
+
 
 class Tour(models.Model):
     """
@@ -37,6 +38,21 @@ class Tour(models.Model):
 
     class Meta:
         db_table = 'tours'
+
+    def __unicode__(self):
+        return u'Тур ' + str(self.tour_number)
+
+    def create_games(self):
+        if self.tour_number == 1:
+            from Chess.libs.elo_rating import sort_players
+            sorted_players = sort_players(self.tournament.player_set.all())
+            team_count = len(sorted_players) // 2
+            for i in range(team_count):
+                g = Game(tour = self)
+                g.save()
+                g.add_player(sorted_players[i], True)
+                g.add_player(sorted_players[i+team_count], False)
+
 
 
 class Player(models.Model):
@@ -75,23 +91,54 @@ class PlayersInTournament(models.Model):
 
 
 class Game(models.Model):
-    game_result = models.IntegerField(max_length=1, blank= True)
-    tour = models.ForeignKey('Tour', related_name='_games')
+    finished = models.BooleanField(default = False)
+    tour = models.ForeignKey('Tour', related_name ='_games')
     signed_players = models.ManyToManyField(
         'Player',
         through='PlayersInGames',
     )
 
-    def add_player(self, player):
-        player_in_game = PlayersInGames(game=self, player=player)
-        player_in_game.save()
-
     class Meta:
         db_table = 'game'
 
+    def add_player(self, player, plays_white):
+        player_in_game = PlayersInGames(
+            game = self,
+            player = player,
+            plays_white = plays_white)
+        player_in_game.save()
+
+    def get_game_data(self):
+        players = self.signed_players.all()
+        from django.db import connection, transaction
+        cursor = connection.cursor()
+        cursor.execute("SELECT\
+            chess_db.player.name,\
+            chess_db.player.elo_rating,\
+            chess_db.players_in_games.plays_white,\
+            chess_db.players_in_games.game_result\
+            FROM chess_db.players_in_games\
+            INNER JOIN chess_db.player\
+            ON chess_db.players_in_games.player_id = chess_db.player.id\
+            WHERE game_id = %s AND player_id = %s OR player_id = %s;  " ,
+            [self.id, players[0].id, players[1].id]
+        )
+        desc = cursor.description
+        return [
+            dict(zip([col[0] for col in desc], row))
+            for row in cursor.fetchall()
+        ]
+
 
 class PlayersInGames(models.Model):
+    GAME_RESULTS = (
+        (0, 'not played') ,
+        (1, 'loose'),
+        (2, 'draw'),
+        (3, 'win'),
+    )
     plays_white = models.BooleanField(blank=True)
+    game_result = models.IntegerField(choices = GAME_RESULTS, default = 0)
     player = models.ForeignKey('Player', related_name='_games')
     game = models.ForeignKey('Game', related_name='_players')
 

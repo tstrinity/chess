@@ -40,3 +40,7 @@ def get_new_elo_rating(player_rating, games):
         total_score - mo
     )
     return new_rating
+
+def sort_players(players):
+    sorted_players = sorted(players, key=lambda player: player.elo_rating, reverse = True)
+    return sorted_players

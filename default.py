@@ -9,5 +9,8 @@ for i in range(1,9):
     p = Player(name = 'Vasya'+str(i), elo_rating = 50*i)
     p.save()
     tp = PlayersInTournament(player = p, tournament=t)
+    PlayersInTournament.objects.select_related()
     tp.save()
 t.create_tours()
+tr = t._tours.get(pk=2)
+tr.create_games()
