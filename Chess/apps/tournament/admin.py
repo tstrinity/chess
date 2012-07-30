@@ -31,6 +31,6 @@ class TournamentAdmin(admin.ModelAdmin):
         TourInline,
         PlayersInTournamentsInline,
         ]
-    readonly_fields = ['prize_positions_count']
+    readonly_fields = ['prize_positions_amount']
 
 admin.site.register(Tournament,TournamentAdmin)

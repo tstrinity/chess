@@ -1,10 +1,22 @@
 # coding=utf-8
 
 from django.db import models
+from django.db.models.aggregates import Count
+from helpers import get_result_dic
+from django.db import connection, transaction
+
+def timer(f):
+    def _timer(*args, **kwargs):
+        import time
+        t = time.time()
+        result = f(*args, **kwargs)
+        print "Time: %f" % (time.time()-t)
+        return result
+    return _timer
 
 class Tournament(models.Model):
     name = models.CharField(max_length=50)
-    prize_positions_count = models.IntegerField(max_length=2)
+    prize_positions_amount = models.IntegerField(max_length=2)
     signed_players = models.ManyToManyField(
         'Player',
         through='PlayersInTournament',
@@ -13,13 +25,38 @@ class Tournament(models.Model):
     date = models.DateField(auto_now_add=True)
 
     class Meta:
-        db_table = 'tournaments'
+        db_table = 'tournament'
+
+    @staticmethod
+    @timer
+    def get_tournaments_info():
+        cursor = connection.cursor()
+        cursor.execute("SELECT\
+            chess_db.tournament.name,\
+            chess_db.tournament.prize_positions_amount,\
+            (SELECT COUNT(*) FROM chess_db.player_in_tournament\
+            where chess_db.tournament.id = player_in_tournament.tournament_id) AS players_count,\
+            (SELECT COUNT(*) FROM tour where tour.tournament_id = chess_db.tournament.id) AS tours_count\
+            FROM  chess_db.tournament"
+        )
+        return  get_result_dic(cursor)
+
+
+    @staticmethod
+    @timer
+    def get_t_info():
+        result = \
+            Tournament.objects.values('name','prize_positions_amount')\
+            .annotate(tours_amount = Count('_tours', distinct= True),
+                players_amount = Count('_players', distinct = True))
+        return result
+
 
     def create_tours(self):
-        player_count = self._players.count()
-        from Chess.libs.tour import calculate_tours_count
-        tours_count = calculate_tours_count(player_count, self.prize_positions_count)
-        for tours_number in range(1, tours_count + 1):
+        player_amount = self._players.count()
+        from Chess.libs.tour import calculate_tours_amount
+        tours_amount = calculate_tours_amount(player_amount, self.prize_positions_amount)
+        for tours_number in range(1, tours_amount + 1):
             tour = Tour(tour_number=tours_number, tournament=self)
             tour.save()
 
@@ -37,7 +74,7 @@ class Tour(models.Model):
     tournament = models.ForeignKey(Tournament, related_name='_tours')
 
     class Meta:
-        db_table = 'tours'
+        db_table = 'tour'
 
     def __unicode__(self):
         return u'Тур ' + str(self.tour_number)
@@ -46,12 +83,12 @@ class Tour(models.Model):
         if self.tour_number == 1:
             from Chess.libs.elo_rating import sort_players
             sorted_players = sort_players(self.tournament.player_set.all())
-            team_count = len(sorted_players) // 2
-            for i in range(team_count):
+            team_amoun = len(sorted_players) // 2
+            for i in range(team_amoun):
                 g = Game(tour = self)
                 g.save()
                 g.add_player(sorted_players[i], True)
-                g.add_player(sorted_players[i+team_count], False)
+                g.add_player(sorted_players[i+team_amoun], False)
 
 
 
@@ -81,7 +118,7 @@ class PlayersInTournament(models.Model):
     tournament = models.ForeignKey(Tournament,related_name='_players')
 
     class Meta:
-        db_table = 'players_in_tournaments'
+        db_table = 'player_in_tournament'
 
     def add_draw(self):
         self.result += 0.5
@@ -110,7 +147,6 @@ class Game(models.Model):
 
     def get_game_data(self):
         players = self.signed_players.all()
-        from django.db import connection, transaction
         cursor = connection.cursor()
         cursor.execute("SELECT\
             chess_db.player.name,\
@@ -123,12 +159,7 @@ class Game(models.Model):
             WHERE game_id = %s AND player_id = %s OR player_id = %s;  " ,
             [self.id, players[0].id, players[1].id]
         )
-        desc = cursor.description
-        return [
-            dict(zip([col[0] for col in desc], row))
-            for row in cursor.fetchall()
-        ]
-
+        return  get_result_dic(cursor)
 
 class PlayersInGames(models.Model):
     GAME_RESULTS = (
@@ -143,4 +174,4 @@ class PlayersInGames(models.Model):
     game = models.ForeignKey('Game', related_name='_players')
 
     class Meta:
-        db_table = 'players_in_games'
+        db_table = 'player_in_game'
