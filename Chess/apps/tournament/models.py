@@ -3,7 +3,7 @@
 from django.db import models
 from django.db.models.aggregates import Count
 from helpers import get_result_dic
-from django.db import connection, transaction
+from django.db import connection
 
 def timer(f):
     def _timer(*args, **kwargs):
@@ -35,8 +35,8 @@ class Tournament(models.Model):
             chess_db.tournament.name,\
             chess_db.tournament.prize_positions_amount,\
             (SELECT COUNT(*) FROM chess_db.player_in_tournament\
-            where chess_db.tournament.id = player_in_tournament.tournament_id) AS players_count,\
-            (SELECT COUNT(*) FROM tour where tour.tournament_id = chess_db.tournament.id) AS tours_count\
+            WHERE chess_db.tournament.id = player_in_tournament.tournament_id) AS players_amount,\
+            (SELECT COUNT(*) FROM tour WHERE tour.tournament_id = chess_db.tournament.id) AS tours_amount\
             FROM  chess_db.tournament"
         )
         return  get_result_dic(cursor)
@@ -44,12 +44,17 @@ class Tournament(models.Model):
 
     @staticmethod
     @timer
-    def get_t_info():
-        result = \
-            Tournament.objects.values('name','prize_positions_amount')\
+    def get_all_info():
+        result = Tournament.objects.values('name','prize_positions_amount')\
             .annotate(tours_amount = Count('_tours', distinct= True),
                 players_amount = Count('_players', distinct = True))
         return result
+
+    def get_info(self):
+        a = dict({
+            'name' : 1
+        })
+        a['1'] = 2
 
 
     def create_tours(self):
@@ -83,12 +88,12 @@ class Tour(models.Model):
         if self.tour_number == 1:
             from Chess.libs.elo_rating import sort_players
             sorted_players = sort_players(self.tournament.player_set.all())
-            team_amoun = len(sorted_players) // 2
-            for i in range(team_amoun):
+            team_amount = len(sorted_players) // 2
+            for i in range(team_amount):
                 g = Game(tour = self)
                 g.save()
                 g.add_player(sorted_players[i], True)
-                g.add_player(sorted_players[i+team_amoun], False)
+                g.add_player(sorted_players[i+team_amount], False)
 
 
 
