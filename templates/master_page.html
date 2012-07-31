@@ -1,0 +1,17 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    {% load static %}
+    {% get_static_prefix as STATIC_PREFIX %}
+    {% block includes %}
+    {% endblock %}
+    <title>
+        {% block title %}
+        {% endblock %}
+    </title>
+</head>
+<body>
+{% block body %}
+{% endblock %}
+</body>
+</html>

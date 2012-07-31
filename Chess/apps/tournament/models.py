@@ -45,16 +45,53 @@ class Tournament(models.Model):
     @staticmethod
     @timer
     def get_all_info():
-        result = Tournament.objects.values('name','prize_positions_amount')\
+        result = Tournament.objects.values('id','name','prize_positions_amount')\
             .annotate(tours_amount = Count('_tours', distinct= True),
                 players_amount = Count('_players', distinct = True))
         return result
 
+    @timer
     def get_info(self):
-        a = dict({
-            'name' : 1
+        tours = []
+        for tour in self._tours.filter(_games__count > 0):
+            temp = dict({
+                'id' : tour.pk,
+                'number': tour.tour_number,
+                'game_count': tour._games.count()
+            })
+            tours.append(temp)
+        result = dict({
+            'name': self.name,
+            'prizes': self.prize_positions_amount,
+            'players_count': self._players.count(),
+            'tours_list': tours
         })
-        a['1'] = 2
+        return result
+
+    @timer
+    def get_info_tour(self):
+        cursor = connection.cursor()
+        cursor.execute("SELECT * FROM\
+                (SELECT *,\
+                    (SELECT count(*) FROM  chess_db.game\
+                    WHERE chess_db.tour.id = chess_db.game.tour_id) AS game_amount,\
+                    (SELECT count(*) FROM  chess_db.game WHERE\
+                    chess_db.tour.id = chess_db.game.tour_id\
+                        and chess_db.game.finished = True) AS game_done_amount\
+                FROM chess_db.tour) AS T\
+                WHERE T.game_amount > 0 AND tournament_id = %s;" ,
+        [self.id]
+        )
+        tours_list = get_result_dic(cursor)
+        result = dict({
+            'name': self.name,
+            'prizes': self.prize_positions_amount,
+            'players_count': self._players.count(),
+            'tours_amount' : self._tours.count(),
+            'tours_list': tours_list
+        })
+        return result
+
 
 
     def create_tours(self):
@@ -94,7 +131,6 @@ class Tour(models.Model):
                 g.save()
                 g.add_player(sorted_players[i], True)
                 g.add_player(sorted_players[i+team_amount], False)
-
 
 
 class Player(models.Model):

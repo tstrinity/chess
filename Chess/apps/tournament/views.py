@@ -7,5 +7,5 @@ def index(request):
     return render_to_response('tournament/index.html',{'info' : Tournament.get_all_info()})
 
 def details(request, tournament_id):
-    t = Tournament.objects.select_related().get(pk=tournament_id)
-    t._tours.all()
+    info = Tournament.objects.get(pk=tournament_id).get_info_tour()
+    return render_to_response('tournament/details.html', {'info' : info})

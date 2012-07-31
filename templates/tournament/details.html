@@ -1,0 +1,20 @@
+{% extends 'tournament/master_page.html' %}
+{% block body %}
+    <p>{{ info.name }}</p>
+    <p>{{ info.prizes }}</p>
+    <p>{{ info.players_count }}</p>
+    <table class="tournament_table">
+        <thead>
+            <th>Номер тура</th>
+            <th>Всего игр</th>
+            <th>Сыграно игр</th>
+        </thead>
+        {% for tour in info.tours_list %}
+            <tr>
+                <td>{{ tour.tour_number }}</td>
+                <td>{{ tour.game_amount }}</td>
+                <td>{{ tour.game_done_amount }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}
