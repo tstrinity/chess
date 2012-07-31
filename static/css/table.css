@@ -1,6 +1,6 @@
 .tournament_table {
     font-family: "Trebuchet MS", sans-serif;
-    font-size: 16px;
+    font-size: 12px;
     font-weight: bold;
     line-height: 1.4em;
     font-style: normal;
@@ -8,7 +8,7 @@
 }
 
 .tournament_table thead th{
-    padding:15px;
+    padding:5px;
     color:#fff;
     text-shadow:1px 1px 1px #568F23;
     border:1px solid #93CE37;
@@ -33,4 +33,33 @@
     -moz-border-radius:5px 5px 0px 0px;
     border-top-left-radius:5px;
     border-top-right-radius:5px;
+}
+
+.tournament_table tfoot td{
+    color: #9CD009;
+    font-size:32px;
+    text-align:center;
+    padding:10px 0px;
+    text-shadow:1px 1px 1px #444;
+}
+.tournament_table tfoot th{
+    color:#666;
+}
+
+.tournament_table thead th:empty{
+    background:transparent;
+    border:none;
+}
+
+.tournament_table tbody td{
+    padding-right: 10px;
+    padding-left: 10px;
+    text-align:center;
+    background-color:#DEF3CA;
+    border: 2px solid #E7EFE0;
+    -moz-border-radius:2px;
+    -webkit-border-radius:2px;
+    border-radius:2px;
+    color:#666;
+    text-shadow:1px 1px 1px #fff;
 }
