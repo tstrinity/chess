@@ -1,0 +1,30 @@
+{% extends 'tournament/master_page.html' %}
+{% load player_tags %}
+{% block body %}
+    <table class="tournament_table">
+        <thead>
+        <th>Участник 1</th>
+        <th>Резульатат</th>
+        <th>Участник 2</th>
+        </thead>
+        <tbody>
+            {% for game in info %}
+            <tr>
+                <td>
+                    {% get_player_figure game.players_info.0.plays_white %}
+                    <span style="vertical-align: middle;">{{ game.players_info.0.player__name }}</span>
+                </td>
+                <td>
+                {% if game.finished %}
+                    {% get_winner_info game.players_info.0   %}
+                {% endif %}
+                </td>
+                <td>
+                    {{ game.players_info.1.player__name }}
+                    {% get_player_figure game.players_info.1.plays_white %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

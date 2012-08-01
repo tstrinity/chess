@@ -2,17 +2,9 @@
 
 from django.db import models
 from django.db.models.aggregates import Count
-from helpers import get_result_dic
+from Chess.libs.helpers import get_result_dic
 from django.db import connection
-
-def timer(f):
-    def _timer(*args, **kwargs):
-        import time
-        t = time.time()
-        result = f(*args, **kwargs)
-        print "Time: %f" % (time.time()-t)
-        return result
-    return _timer
+from Chess.libs.helpers import timer
 
 class Tournament(models.Model):
     name = models.CharField(max_length=50)
@@ -51,24 +43,6 @@ class Tournament(models.Model):
         return result
 
     @timer
-    def get_info(self):
-        tours = []
-        for tour in self._tours.filter(_games__count > 0):
-            temp = dict({
-                'id' : tour.pk,
-                'number': tour.tour_number,
-                'game_count': tour._games.count()
-            })
-            tours.append(temp)
-        result = dict({
-            'name': self.name,
-            'prizes': self.prize_positions_amount,
-            'players_count': self._players.count(),
-            'tours_list': tours
-        })
-        return result
-
-    @timer
     def get_info_tour(self):
         cursor = connection.cursor()
         cursor.execute("SELECT * FROM\
@@ -93,7 +67,6 @@ class Tournament(models.Model):
         return result
 
 
-
     def create_tours(self):
         player_amount = self._players.count()
         from Chess.libs.tour import calculate_tours_amount
@@ -113,7 +86,7 @@ class Tour(models.Model):
     индекс по внешнему ключу ключу турнира
     """
     tour_number = models.IntegerField(max_length=2)
-    tournament = models.ForeignKey(Tournament, related_name='_tours')
+    tournament = models.ForeignKey('Tournament', related_name='_tours')
 
     class Meta:
         db_table = 'tour'
@@ -131,6 +104,19 @@ class Tour(models.Model):
                 g.save()
                 g.add_player(sorted_players[i], True)
                 g.add_player(sorted_players[i+team_amount], False)
+
+
+    @timer
+    def get_games_info(self):
+        result = []
+        games = self._games.all()
+        for g in games:
+            temp = {}
+            temp['finished'] = g.finished
+            players_info = PlayersInGames.objects.filter(game = g)
+            temp['players_info'] = players_info.values('plays_white','game_result','player__name')
+            result.append(temp)
+        return result
 
 
 class Player(models.Model):
@@ -155,8 +141,8 @@ class Player(models.Model):
 
 class PlayersInTournament(models.Model):
     result = models.FloatField(default = 0.0)
-    player = models.ForeignKey(Player, related_name='_tournaments')
-    tournament = models.ForeignKey(Tournament,related_name='_players')
+    player = models.ForeignKey('Player', related_name='_tournaments')
+    tournament = models.ForeignKey('Tournament' ,related_name='_players')
 
     class Meta:
         db_table = 'player_in_tournament'
@@ -201,6 +187,7 @@ class Game(models.Model):
             [self.id, players[0].id, players[1].id]
         )
         return  get_result_dic(cursor)
+
 
 class PlayersInGames(models.Model):
     GAME_RESULTS = (
