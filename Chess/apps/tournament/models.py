@@ -9,6 +9,8 @@ from Chess.libs.helpers import timer
 class Tournament(models.Model):
     name = models.CharField(max_length=50)
     prize_positions_amount = models.IntegerField(max_length=2)
+    finished = models.BooleanField(default=False)
+    current_tour_number = models.IntegerField(default=1)
     signed_players = models.ManyToManyField(
         'Player',
         through='PlayersInTournament',
@@ -66,6 +68,8 @@ class Tournament(models.Model):
         })
         return result
 
+    def get_players_ratings(self):
+        return  self._players.values('player__name', 'games_played', 'result').order_by('-result')
 
     def create_tours(self):
         player_amount = self._players.count()
@@ -96,23 +100,31 @@ class Tour(models.Model):
 
     def create_games(self):
         if self.tour_number == 1:
-            from Chess.libs.elo_rating import sort_players
+            from Chess.libs.tour import sort_players
             sorted_players = sort_players(self.tournament.player_set.all())
-            team_amount = len(sorted_players) // 2
-            for i in range(team_amount):
-                g = Game(tour = self)
-                g.save()
-                g.add_player(sorted_players[i], True)
-                g.add_player(sorted_players[i+team_amount], False)
+        else:
+            from Chess.libs.tour import sort_players_by_results
+            p_in_t  = PlayersInTournament.objects.filter(
+                tournament = self.tournament
+            )
+            sorted_players = sort_players_by_results(p_in_t)
 
+        team_amount = len(sorted_players) // 2
+        for i in range(team_amount):
+            g = Game(tour = self)
+            g.save()
+            g.add_player(sorted_players[i], True)
+            g.add_player(sorted_players[i + team_amount], False)
 
     @timer
     def get_games_info(self):
         result = []
         games = self._games.all()
         for g in games:
-            temp = {}
-            temp['finished'] = g.finished
+            temp = {
+                'id' : g.id,
+                'finished' : g.finished
+            }
             players_info = PlayersInGames.objects.filter(game = g)
             temp['players_info'] = players_info.values('plays_white','game_result','player__name')
             result.append(temp)
@@ -141,6 +153,7 @@ class Player(models.Model):
 
 class PlayersInTournament(models.Model):
     result = models.FloatField(default = 0.0)
+    games_played = models.IntegerField(default=0)
     player = models.ForeignKey('Player', related_name='_tournaments')
     tournament = models.ForeignKey('Tournament' ,related_name='_players')
 
@@ -149,9 +162,17 @@ class PlayersInTournament(models.Model):
 
     def add_draw(self):
         self.result += 0.5
+        self.games_played += 1
+        self.save()
 
     def add_win(self):
         self.result += 1
+        self.games_played += 1
+        self.save()
+
+    def add_loose(self):
+        self.games_played += 1
+        self.save()
 
 
 class Game(models.Model):
@@ -187,6 +208,31 @@ class Game(models.Model):
             [self.id, players[0].id, players[1].id]
         )
         return  get_result_dic(cursor)
+
+    @timer
+    def set_match_result(self, result):
+        self.finished = True
+        self.save()
+        tournament = Tour.objects.get(pk = self.tour_id).tournament
+        if result == 'draw':
+            for player_in_game in self._players.all():
+                player_in_game.game_result = 2
+                player_in_game.save()
+                pg = PlayersInTournament.objects.get(player = player_in_game.player,
+                    tournament = tournament)
+                pg.add_draw()
+        else:
+            winner = self._players.get(player__name = result)
+            winner.game_result = 3
+            winner.save()
+            pg = PlayersInTournament.objects.get(player = winner.player, tournament = tournament)
+            pg.add_win()
+            looser = self._players.exclude(player = winner.player).get()
+            looser.game_result = 1
+            looser.save()
+            pg = PlayersInTournament.objects.get(player = looser.player,
+                tournament = tournament)
+            pg.add_loose()
 
 
 class PlayersInGames(models.Model):

@@ -1,11 +1,12 @@
 {% extends 'tournament/master_page.html' %}
 {% load player_tags %}
 {% block body %}
-    <table class="tournament_table">
+    <table class="tablesorter">
         <thead>
         <th>Участник 1</th>
         <th>Резульатат</th>
         <th>Участник 2</th>
+        <th>Введите результат</th>
         </thead>
         <tbody>
             {% for game in info %}
@@ -23,6 +24,19 @@
                     {{ game.players_info.1.player__name }}
                     {% get_player_figure game.players_info.1.plays_white %}
                 </td>
+                {% if not game.finished %}
+                <td>
+                <form action="/games/setWinner/{{ game.id }}/" method="post">
+                {% csrf_token %}
+                <select name="winner">
+                    <option value="draw">Ничья</option>
+                    <option value="{{ game.players_info.0.player__name }}">{{ game.players_info.0.player__name }}</option>
+                    <option value="{{ game.players_info.1.player__name }}">{{ game.players_info.1.player__name }}</option>
+                    <input type="submit" value="Принять" id="{{ game.id }}">
+                </select>
+                </form>
+                </td>
+                {% endif %}
             </tr>
             {% endfor %}
         </tbody>

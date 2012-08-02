@@ -1,0 +1,26 @@
+{% extends 'tournament/master_page.html' %}
+{% block includes %}
+    {{ block.super }}
+
+{% endblock %}
+{% block body %}
+    <table class="tablesorter">
+        <thead>
+        <tr>
+            <th>Имя</th>
+            <th>Игр проведено</th>
+            <th>Результат</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for info_row in info %}
+            <tr>
+                <td>{{ info_row.player__name }}</td>
+                <td>{{ info_row.games_played }}</td>
+                <td>{{ info_row.result }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
+

@@ -9,4 +9,5 @@ urlpatterns = patterns('django.views.generic.simple',
     url(r'^admin/', include(admin.site.urls)),
     url(r'^tours/', include('Chess.apps.tour.urls')),
     url(r'^tournaments/', include('Chess.apps.tournament.urls')),
+    url(r'^games/', include('Chess.apps.game.urls')),
 )

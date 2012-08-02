@@ -16,8 +16,8 @@ def get_player_figure(white):
 @register.simple_tag
 def get_winner_info(player_info):
     if player_info['game_result'] == 1:
-        return get_player_figure(player_info['plays_white'])
-    elif player_info['game_result'] == 3:
         return get_player_figure(not player_info['plays_white'])
+    elif player_info['game_result'] == 3:
+        return get_player_figure(player_info['plays_white'])
     else:
         return u'Ничья'

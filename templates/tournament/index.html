@@ -1,6 +1,6 @@
 {% extends 'tournament/master_page.html' %}
 {% block body %}
-<table class="tournament_table">
+<table class="tablesorter">
     <thead>
         <th></th>
         <th>Название</th>
@@ -8,6 +8,7 @@
         <th>Участников</th>
         <th>Туров</th>
     </thead>
+    <tbody>
     {% for info_row in info %}
         <tr>
             <td><a href="/tournaments/{{ info_row.id }}/">
@@ -18,6 +19,7 @@
             <td>{{ info_row.tours_amount }}</td>
         </tr>
     {% endfor %}
+    </tbody>
 </table>
 {% endblock %}
 

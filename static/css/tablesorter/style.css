@@ -1,0 +1,35 @@
+table.tablesorter {
+	font-size: 12px;
+}
+table.tablesorter th {
+	text-align: left;
+	padding: 5px;
+}
+table.tablesorter td {
+    color:#666;
+    text-shadow:1px 1px 1px #fff;
+	padding: 5px;
+}
+table.tablesorter .even {
+	background-color: #ffffff;
+}
+table.tablesorter .odd {
+	background-color: #d1ff99;
+}
+table.tablesorter .header {
+	background-image: url(bg.png);
+	background-repeat: no-repeat;
+	border-left: 1px solid #FFF;
+	border-top: 1px solid #FFF;
+	padding-left: 30px;
+	padding-top: 8px;
+	height: auto;
+}
+table.tablesorter .headerSortUp {
+	background-image: url(asc.png);
+	background-repeat: no-repeat;
+}
+table.tablesorter .headerSortDown {
+	background-image: url(desc.png);
+	background-repeat: no-repeat;
+}
