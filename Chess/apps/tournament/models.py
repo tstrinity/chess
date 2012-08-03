@@ -4,13 +4,14 @@ from django.db import models
 from django.db.models.aggregates import Count
 from Chess.libs.helpers import get_result_dic
 from django.db import connection
+from Chess.libs.tour import sort_players, sort_players_by_results
 from Chess.libs.helpers import timer
 
 class Tournament(models.Model):
     name = models.CharField(max_length=50)
     prize_positions_amount = models.IntegerField(max_length=2)
     finished = models.BooleanField(default=False)
-    current_tour_number = models.IntegerField(default=1)
+    current_tour_number = models.IntegerField(default=0)
     signed_players = models.ManyToManyField(
         'Player',
         through='PlayersInTournament',
@@ -18,8 +19,10 @@ class Tournament(models.Model):
     )
     date = models.DateField(auto_now_add=True)
 
+
     class Meta:
         db_table = 'tournament'
+
 
     @staticmethod
     @timer
@@ -44,6 +47,7 @@ class Tournament(models.Model):
                 players_amount = Count('_players', distinct = True))
         return result
 
+
     @timer
     def get_info_tour(self):
         cursor = connection.cursor()
@@ -60,6 +64,7 @@ class Tournament(models.Model):
         )
         tours_list = get_result_dic(cursor)
         result = dict({
+            'id' : self.id,
             'name': self.name,
             'prizes': self.prize_positions_amount,
             'players_count': self._players.count(),
@@ -68,9 +73,13 @@ class Tournament(models.Model):
         })
         return result
 
+
+    @timer
     def get_players_ratings(self):
         return  self._players.values('player__name', 'games_played', 'result').order_by('-result')
 
+
+    @timer
     def create_tours(self):
         player_amount = self._players.count()
         from Chess.libs.tour import calculate_tours_amount
@@ -78,6 +87,17 @@ class Tournament(models.Model):
         for tours_number in range(1, tours_amount + 1):
             tour = Tour(tour_number=tours_number, tournament=self)
             tour.save()
+
+
+    @timer
+    def start_new_tour(self):
+        self.current_tour_number += 1
+        self._tours.all()[self.current_tour_number].create_games()
+        self.save()
+
+
+    def return_url(self):
+        return '/tournaments/' + str(self.id) + '/'
 
     def __unicode__(self):
         return self.name
@@ -92,29 +112,38 @@ class Tour(models.Model):
     tour_number = models.IntegerField(max_length=2)
     tournament = models.ForeignKey('Tournament', related_name='_tours')
 
+
     class Meta:
         db_table = 'tour'
+
 
     def __unicode__(self):
         return u'Тур ' + str(self.tour_number)
 
+
+    @timer
     def create_games(self):
         if self.tour_number == 1:
-            from Chess.libs.tour import sort_players
-            sorted_players = sort_players(self.tournament.player_set.all())
+            sorted_players = sorted(players, key=lambda player: player.elo_rating, reverse = True)
+            if not len(sorted_players) % 2 == 0:
+                p_in_t = PlayersInTournament.objects.get(
+                    tournament = self.tournament,
+                    player = sorted_players[-1]
+                )
+                p_in_t.add_bye()
+
         else:
-            from Chess.libs.tour import sort_players_by_results
             p_in_t  = PlayersInTournament.objects.filter(
                 tournament = self.tournament
             )
             sorted_players = sort_players_by_results(p_in_t)
-
         team_amount = len(sorted_players) // 2
         for i in range(team_amount):
             g = Game(tour = self)
             g.save()
             g.add_player(sorted_players[i], True)
             g.add_player(sorted_players[i + team_amount], False)
+
 
     @timer
     def get_games_info(self):
@@ -144,8 +173,13 @@ class Player(models.Model):
         blank = True
     )
 
+    @staticmethod
+    def get_elo_ratings():
+        return  Player.objects.values('name', 'elo_rating')
+
     def __unicode__(self):
         return self.name
+
 
     class Meta:
         db_table =  'player'
@@ -154,21 +188,31 @@ class Player(models.Model):
 class PlayersInTournament(models.Model):
     result = models.FloatField(default = 0.0)
     games_played = models.IntegerField(default=0)
+    due_color = models.IntegerField(default=0)
+    has_bye = models.BooleanField(default=False)
     player = models.ForeignKey('Player', related_name='_tournaments')
     tournament = models.ForeignKey('Tournament' ,related_name='_players')
 
     class Meta:
         db_table = 'player_in_tournament'
 
+
+    def add_bye(self):
+        self.has_bye = True
+        self.save()
+
+
     def add_draw(self):
         self.result += 0.5
         self.games_played += 1
         self.save()
 
+
     def add_win(self):
         self.result += 1
         self.games_played += 1
         self.save()
+
 
     def add_loose(self):
         self.games_played += 1
@@ -186,6 +230,8 @@ class Game(models.Model):
     class Meta:
         db_table = 'game'
 
+
+    @timer
     def add_player(self, player, plays_white):
         player_in_game = PlayersInGames(
             game = self,
@@ -193,6 +239,8 @@ class Game(models.Model):
             plays_white = plays_white)
         player_in_game.save()
 
+
+    @timer
     def get_game_data(self):
         players = self.signed_players.all()
         cursor = connection.cursor()
@@ -208,6 +256,7 @@ class Game(models.Model):
             [self.id, players[0].id, players[1].id]
         )
         return  get_result_dic(cursor)
+
 
     @timer
     def set_match_result(self, result):
@@ -233,6 +282,10 @@ class Game(models.Model):
             pg = PlayersInTournament.objects.get(player = looser.player,
                 tournament = tournament)
             pg.add_loose()
+        if self.tour._games.filter(finished = False).count() == 0:
+            self.tour.tournament.start_new_tour()
+            return True
+        return False
 
 
 class PlayersInGames(models.Model):

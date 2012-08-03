@@ -10,4 +10,5 @@ urlpatterns = patterns('django.views.generic.simple',
     url(r'^tours/', include('Chess.apps.tour.urls')),
     url(r'^tournaments/', include('Chess.apps.tournament.urls')),
     url(r'^games/', include('Chess.apps.game.urls')),
+    url(r'^players/', include('Chess.apps.player.urls')),
 )

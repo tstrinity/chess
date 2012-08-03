@@ -3,3 +3,37 @@
     font-size: 12px;
     font-style: normal;
 }
+
+body {
+    background-color: #ffffff;
+}
+
+#layout{
+    text-align:left;
+    margin:0 auto;
+    padding:0 35px;
+    padding-left:60px;
+    min-width:940px;
+    max-width:1154px;
+    border:0 solid red;
+}
+
+.content_left {
+    float: left;
+    margin-right: 1%;
+    margin-left: 15px;
+    width: 65.5%;
+    -webkit-box-shadow: 0 0 15px #969696;
+    -moz-box-shadow: 0 0 15px #969696;
+    box-shadow: 0 0 15px #969696;
+}
+
+.sidebar_right {
+    float: left;
+    width: 31%;
+    overflow: hidden;
+    margin-bottom: 20px;
+    -webkit-box-shadow: 0 0 15px #969696;
+    -moz-box-shadow: 0 0 15px #969696;
+    box-shadow: 0 0 15px #969696;
+}

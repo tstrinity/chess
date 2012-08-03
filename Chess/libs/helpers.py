@@ -13,6 +13,6 @@ def timer(f):
         import time
         t = time.time()
         result = f(*args, **kwargs)
-        print "Time: %f" % (time.time()-t)
+        print f.__name__ + " Time: %f" % (time.time()-t)
         return result
     return _timer

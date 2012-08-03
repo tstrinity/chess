@@ -1,6 +1,6 @@
 {% extends 'master_page.html' %}
 {% block includes %}
-{{ block.super }}
+    {{ block.super }}
     <link rel="stylesheet" type="text/css" href="{{ STATIC_PREFIX }}css/tablesorter/style.css">
     <script type="text/javascript" src="{{ STATIC_PREFIX }}js/jquery-1.7.2.min.js"></script>
     <script type="text/javascript" src="{{ STATIC_PREFIX }}js/jquery.tablesorter.min.js"></script>
@@ -13,4 +13,22 @@
                 }
         );
     </script>
+{% endblock %}
+{% block content %}
+    <table class="tablesorter">
+        <thead>
+            <tr>
+            <th>Имя</th>
+            <th>Рейтинг Эло</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for player in info %}
+            <tr>
+            <td>{{ player.name }}</td>
+            <td>{{ player.elo_rating }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
 {% endblock %}

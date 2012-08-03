@@ -1,5 +1,5 @@
 {% extends 'tournament/master_page.html' %}
-{% block body %}
+{% block content %}
     <div class="tournament_info">
         <p>Название турнира: {{ info.name }}</p>
         <p>Количество призовых мест: {{ info.prizes }}</p>
@@ -23,4 +23,8 @@
         {% endfor %}
         </tbody>
     </table>
+{% endblock %}
+{% block sidebar %}
+    {{ block.super }}
+    <a href="/tournaments/{{ info.id }}/rating">Рейтинг игроков</a>
 {% endblock %}

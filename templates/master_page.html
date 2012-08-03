@@ -4,6 +4,7 @@
     {% load static %}
     {% get_static_prefix as STATIC_PREFIX %}
     {% block includes %}
+        <link rel="stylesheet" href="{{ STATIC_PREFIX }}css/main.css" type="text/css" media="screen" />
     {% endblock %}
     <title>
         {% block title %}
@@ -11,7 +12,17 @@
     </title>
 </head>
 <body>
-{% block body %}
-{% endblock %}
+<div id="layout">
+    <div class="content_left">
+    {% block content %}
+    {% endblock %}
+    </div>
+    <div class="sidebar_right">
+    {% block sidebar %}
+        <a href="/tournaments/">Туриниры</a>
+        <a href="/players/rating/">Рейтинг Эло</a>
+    {% endblock %}
+    </div>
+</div>
 </body>
 </html>

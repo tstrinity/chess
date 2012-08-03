@@ -3,6 +3,7 @@
 __author__ = 'tstrinity'
 
 from math import log
+from Chess.libs.first_round_pairing import *
 
 def calculate_tours_amount(players_count, prize_positions):
     """
@@ -18,12 +19,9 @@ def calculate_tours_amount(players_count, prize_positions):
         right = round(log(prize_positions - 1, 2))
     return int(left + right)
 
-def sort_players(players):
-    sorted_players = sorted(players, key=lambda player: player.elo_rating, reverse = True)
-    return sorted_players
+
 
 def sort_players_by_results(p_in_t):
-    print p_in_t
     sorted_p_in_t = sorted(p_in_t, key=lambda item: item.result, reverse= True)
     sorted_players = []
     for item in sorted_p_in_t:

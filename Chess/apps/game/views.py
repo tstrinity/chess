@@ -12,5 +12,7 @@ def setWinner(request, game_id):
         c.update(csrf(request))
         game = get_object_or_404(Game, pk=game_id)
         result = request.POST['winner']
-        game.set_match_result(result)
-    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        if game.set_match_result(result) == False:
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        else:
+            return HttpResponseRedirect(game.tour.tournament.return_url())
