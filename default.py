@@ -1,5 +1,4 @@
-__author__ = 'tstrinity'
-
+from Chess.apps.player.models import Player, PlayersInTournament
 from Chess.apps.tournament.models import *
 
 t = Tournament(name = 'deutschland')

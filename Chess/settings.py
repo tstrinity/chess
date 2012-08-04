@@ -108,6 +108,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.admin',
     'django.contrib.admindocs',
+    'Chess.apps.game',
     'Chess.apps.tournament',
     'Chess.apps.tour',
     'Chess.apps.player',

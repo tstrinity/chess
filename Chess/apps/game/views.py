@@ -1,7 +1,7 @@
 # Create your views here.
 
 from django.shortcuts import get_object_or_404, render_to_response
-from Chess.apps.tournament.models import Game
+from Chess.apps.game.models import Game
 from django.core.context_processors import csrf
 from django.http import HttpResponseRedirect
 

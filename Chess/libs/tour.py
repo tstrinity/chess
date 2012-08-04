@@ -3,7 +3,6 @@
 __author__ = 'tstrinity'
 
 from math import log
-from Chess.libs.first_round_pairing import *
 
 def calculate_tours_amount(players_count, prize_positions):
     """

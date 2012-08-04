@@ -1,3 +1,5 @@
+from Chess.apps.player.models import PlayersInTournament, Player
+from Chess.apps.tour.models import Tour
 
 __author__ = 'tstrinity'
 
