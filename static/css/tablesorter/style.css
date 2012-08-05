@@ -1,5 +1,6 @@
 table.tablesorter {
 	font-size: 12px;
+    width: 100%;
 }
 table.tablesorter th {
 	text-align: left;
@@ -14,7 +15,7 @@ table.tablesorter .even {
 	background-color: #ffffff;
 }
 table.tablesorter .odd {
-	background-color: #d1ff99;
+	background-color: #d4d5ff;
 }
 table.tablesorter .header {
 	background-image: url(bg.png);

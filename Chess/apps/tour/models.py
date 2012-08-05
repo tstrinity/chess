@@ -19,21 +19,13 @@ class Tour(models.Model):
     tournament = models.ForeignKey('tournament.Tournament', related_name='_tours')
 
 
-    class Meta:
-        db_table = 'tour'
-
-
-    def __unicode__(self):
-        return u'Тур ' + str(self.tour_number)
-
-
     @timer
     def create_games(self):
         """
         если первый тур сортируем игроков по рейтингу
-            если количество нечетное то самого низкого по рейтингу
-            добавляем как проходящего в след. тур с одним очком
-            иначе
+        если количество нечетное то самого низкого по рейтингу
+        добавляем как проходящего в след. тур с одним очком
+        иначе
         """
         if self.tour_number == 1:
             create_pairs(self,  0)
@@ -63,3 +55,12 @@ class Tour(models.Model):
             temp['players_info'] = players_info.values('plays_white','game_result','player__name')
             result.append(temp)
         return result
+
+
+
+    class Meta:
+        db_table = 'tour'
+
+
+    def __unicode__(self):
+        return u'Тур ' + str(self.tour_number)

@@ -15,7 +15,7 @@
         <tbody>
         {% for tour in info.tours_list %}
             <tr>
-                <td><a href="/tours/{{ tour.id }}/"><img src="{{ STATIC_PREFIX }}img/arrow_right_green.png"></a> </td>
+                <td><a href="/tours/{{ tour.id }}/" class="button_details">Переход</a> </td>
                 <td>{{ tour.tour_number }}</td>
                 <td>{{ tour.game_amount }}</td>
                 <td>{{ tour.game_done_amount }}</td>

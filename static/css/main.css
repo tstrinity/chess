@@ -5,7 +5,7 @@
 }
 
 body {
-    background-color: #ffffff;
+    background-color: #708090;
 }
 
 #layout{
@@ -19,21 +19,40 @@ body {
 }
 
 .content_left {
+    background-color: white;
     float: left;
     margin-right: 1%;
     margin-left: 15px;
+    padding: 5px;
     width: 65.5%;
-    -webkit-box-shadow: 0 0 15px #969696;
-    -moz-box-shadow: 0 0 15px #969696;
-    box-shadow: 0 0 15px #969696;
 }
 
 .sidebar_right {
+    background-color: white;
     float: left;
     width: 31%;
     overflow: hidden;
     margin-bottom: 20px;
-    -webkit-box-shadow: 0 0 15px #969696;
-    -moz-box-shadow: 0 0 15px #969696;
-    box-shadow: 0 0 15px #969696;
+}
+
+.linklist {
+    font-family: "Trebuchet MS", sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+    font-style: normal;
+    list-style: none;
+}
+
+.linklist a {
+    text-decoration: none;
+    color: #708090;
+}
+
+.button_details {
+    background-color: #1e90ff;
+    font-size: 10px;
+    padding: 5px;
+    font-weight: bold;
+    text-decoration: none;
+    color: #9CD009;
 }

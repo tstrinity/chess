@@ -19,12 +19,19 @@ class Game(models.Model):
 
     @timer
     def add_player(self, player, plays_white):
-
         player_in_game = PlayersInGames(
             game = self,
             player = player,
             plays_white = plays_white)
         player_in_game.save()
+        player_in_tournament = PlayersInTournament.objects.get(
+            tournament = self.tour.tournament,
+            player = player
+        )
+        if plays_white:
+            player_in_tournament.due_color += 1
+        else:
+            player_in_tournament.due_color -= 1
 
 
     @timer

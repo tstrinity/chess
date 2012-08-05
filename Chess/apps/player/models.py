@@ -74,5 +74,6 @@ class PlayersInGames(models.Model):
     player = models.ForeignKey('player.Player', related_name='_games')
     game = models.ForeignKey('game.Game', related_name='_players')
 
+
     class Meta:
         db_table = 'player_in_game'

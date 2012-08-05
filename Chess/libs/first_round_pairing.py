@@ -23,9 +23,9 @@ def create_pairs(tour, pairing_method):
     if pairing_method > 3:
         pairing_method = 0
     if pairing_method == 0: sorted_players = pairing_method_fold_pairing(sorted_players)
-    if pairing_method == 1: sorted_players = pairing_method_slide_pairing(sorted_players)
-    if pairing_method == 2: sorted_players = pairing_method_adjacent_pairing(sorted_players)
-    if pairing_method == 3: sorted_players = pairing_method_random_pairing(sorted_players)
+    elif pairing_method == 1: sorted_players = pairing_method_slide_pairing(sorted_players)
+    elif pairing_method == 2: sorted_players = pairing_method_adjacent_pairing(sorted_players)
+    elif pairing_method == 3: sorted_players = pairing_method_random_pairing(sorted_players)
     players_amount = len(sorted_players)
     first_player_color_white = randint(0,2)
     for i in range(0,players_amount, 2):
@@ -77,6 +77,3 @@ def pairing_method_random_pairing(sorted_players):
     случайным образом
     """
     return shuffle(sorted_players)
-
-def first_round_color_picker():
-    pass
