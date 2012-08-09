@@ -1,24 +1,30 @@
 {% extends 'tournament/master_page.html' %}
+{% block title %}Список турниров{% endblock %}
 {% block content %}
-<table class="tablesorter">
-    <thead>
-        <th></th>
-        <th>Название</th>
-        <th>Призов</th>
-        <th>Участников</th>
-        <th>Туров</th>
-    </thead>
-    <tbody>
-    {% for info_row in info %}
-        <tr>
-            <td><a href="/tournaments/{{ info_row.id }}/">
-                <img src="{{ STATIC_PREFIX }}img/arrow_right_green.png"></a></td>
-            <td>{{ info_row.name }}</td>
-            <td>{{ info_row.prize_positions_amount }}</td>
-            <td>{{ info_row.players_amount }}</td>
-            <td>{{ info_row.tours_amount }}</td>
-        </tr>
-    {% endfor %}
-    </tbody>
-</table>
+<div class="post">
+    <h2 class="title">Список турниров</h2>
+    <div class="entry">
+        <table class="tablesorter">
+            <thead>
+                <th></th>
+                <th>Название</th>
+                <th>Призов</th>
+                <th>Участников</th>
+                <th>Туров</th>
+            </thead>
+            <tbody>
+            {% for info_row in info %}
+                <tr>
+                    <td><a href="/tournaments/{{ info_row.id }}/" class="button">
+                        Просмотр</a></td>
+                    <td>{{ info_row.name }}</td>
+                    <td>{{ info_row.prize_positions_amount }}</td>
+                    <td>{{ info_row.players_amount }}</td>
+                    <td>{{ info_row.tours_amount }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
 {% endblock %}

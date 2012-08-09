@@ -1,0 +1,27 @@
+{% extends 'tournament/master_page.html' %}
+{% block title %}Неактивные турниры{% endblock %}
+{% block content %}
+    <div class="post">
+        <h2 class="title">Неактивные турниры</h2>
+        <div class="entry">
+            <table class="tablesorter">
+                <thead>
+                <th></th>
+                <th>Название</th>
+                <th>Призов</th>
+                <th>Участников</th>
+                </thead>
+                <tbody>
+                {% for info_row in info %}
+                    <tr>
+                        <td><a class="button" href="/tournaments/{{ info_row.id }}/inactive/">Просмотр</a></td>
+                        <td>{{ info_row.name }}</td>
+                        <td>{{ info_row.prize_positions_amount }}</td>
+                        <td>{{ info_row.players_amount }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

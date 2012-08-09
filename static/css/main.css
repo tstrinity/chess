@@ -1,36 +1,29 @@
-.tournament_info {
-    font-family: "Trebuchet MS", sans-serif;
-    font-size: 12px;
-    font-style: normal;
-}
-
-body {
-    background-color: #708090;
-}
+a { font-family: "Trebuchet MS", sans-serif; font-size: 12px; font-style: normal; text-decoration: none; color: gray; }
+a:hover { color:#d3d3d3; font-weight: bolder; }
+body { background-color: white; }
 
 #layout{
+    border-radius: 5px;
+    background-color: white;
     text-align:left;
     margin:0 auto;
     padding:0 35px;
     padding-left:60px;
     min-width:940px;
     max-width:1154px;
+    height: 100%;
     border:0 solid red;
 }
 
-.content_left {
-    background-color: white;
+.content {
     float: left;
-    margin-right: 1%;
-    margin-left: 15px;
     padding: 5px;
     width: 65.5%;
 }
 
-.sidebar_right {
-    background-color: white;
+.sidebar {
     float: left;
-    width: 31%;
+    width: 31.5%;
     overflow: hidden;
     margin-bottom: 20px;
 }
@@ -43,9 +36,20 @@ body {
     list-style: none;
 }
 
+.linklist li {
+    padding-bottom: 5px;
+}
+
 .linklist a {
     text-decoration: none;
-    color: #708090;
+}
+
+.linklist a:hover {
+    text-decoration: underline;
+}
+
+.linklist a:visited {
+    color:black;
 }
 
 .button_details {
@@ -55,4 +59,22 @@ body {
     font-weight: bold;
     text-decoration: none;
     color: #9CD009;
+}
+
+#header{
+    margin-bottom: 20px;
+    height: 100px;
+}
+
+
+
+.text_input {
+
+}
+
+.button {
+
+}
+
+#banner {
 }

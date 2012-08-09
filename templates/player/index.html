@@ -15,7 +15,9 @@
     </script>
 {% endblock %}
 {% block content %}
-    <table class="tablesorter">
+    <div class="post">
+    <h2 class="title">Таблица игроков</h2>
+    <table class="tablesorter" style="width: 470px">
         <thead>
             <tr>
             <th>Имя</th>
@@ -31,4 +33,5 @@
         {% endfor %}
         </tbody>
     </table>
+    </div>
 {% endblock %}

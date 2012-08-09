@@ -30,16 +30,8 @@ class Tour(models.Model):
         if self.tour_number == 1:
             create_pairs(self,  0)
         else:
-            p_in_t  = PlayersInTournament.objects.filter(
-                tournament = self.tournament
-            )
-            sorted_players = sort_players_by_results(p_in_t)
-            team_amount = len(sorted_players) // 2
-            for i in range(team_amount):
-                g = Game(tour = self)
-                g.save()
-                g.add_player(sorted_players[i], True)
-                g.add_player(sorted_players[i + team_amount], False)
+            from Chess.libs.burstein_swiss_pairing import create_pairs
+            create_pairs(self)
 
 
     @timer

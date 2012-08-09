@@ -1,14 +1,17 @@
 # coding=utf-8
 
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models.aggregates import Count
 from Chess.libs.helpers import get_result_dic
 from django.db import connection
 from Chess.libs.helpers import timer
+from django import forms
 
 class Tournament(models.Model):
     name = models.CharField(max_length=50)
     prize_positions_amount = models.IntegerField(max_length=2)
+    active = models.BooleanField(default=False)
     finished = models.BooleanField(default=False)
     current_tour_number = models.IntegerField(default=0)
     signed_players = models.ManyToManyField(
@@ -22,13 +25,24 @@ class Tournament(models.Model):
     class Meta:
         db_table = 'tournament'
 
+
     @staticmethod
     @timer
-    def get_all_info():
+    def get_all_info(started):
         result = Tournament.objects.values('id','name','prize_positions_amount')\
+            .filter(active=started)\
             .annotate(tours_amount = Count('_tours', distinct= True),
                 players_amount = Count('_players', distinct = True))
         return result
+
+
+    def start_tournament(self):
+        if self.signed_players.count() > 1:
+            self.create_tours()
+            self.active = True
+            self.save()
+        else:
+            raise ValidationError(message=u'Меньше чем два игрока подписано на турнир')
 
 
     @timer
@@ -86,3 +100,12 @@ class Tournament(models.Model):
 
     def __unicode__(self):
         return self.name
+
+
+class TournamentAddForm(forms.ModelForm):
+    name = forms.CharField(max_length=50,required=True)
+    prize_positions_amount = forms.IntegerField(min_value=1,required=True)
+
+    class Meta:
+        model = Tournament
+        fields = ('name', 'prize_positions_amount')

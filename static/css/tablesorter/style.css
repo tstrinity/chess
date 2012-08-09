@@ -1,6 +1,6 @@
 table.tablesorter {
 	font-size: 12px;
-    width: 100%;
+    width: 80%;
 }
 table.tablesorter th {
 	text-align: left;
@@ -11,9 +11,11 @@ table.tablesorter td {
     text-shadow:1px 1px 1px #fff;
 	padding: 5px;
 }
+
 table.tablesorter .even {
 	background-color: #ffffff;
 }
+
 table.tablesorter .odd {
 	background-color: #d4d5ff;
 }
@@ -26,10 +28,12 @@ table.tablesorter .header {
 	padding-top: 8px;
 	height: auto;
 }
+
 table.tablesorter .headerSortUp {
 	background-image: url(asc.png);
 	background-repeat: no-repeat;
 }
+
 table.tablesorter .headerSortDown {
 	background-image: url(desc.png);
 	background-repeat: no-repeat;

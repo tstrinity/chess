@@ -1,0 +1,25 @@
+{% extends 'master_page.html' %}
+{% block content %}
+<div class="post">
+    <h2 class="title">Добавить игрока</h2>
+    <form action="/players/create/" method="POST">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        <div class="input_field">
+            <ul>
+                <li>{{ form.name.label }}</li>
+                <li>{{ form.name.errors}}</li>
+                <li>{{ form.name }}</li>
+            </ul>
+        </div>
+        <div class="input_field">
+            <ul>
+                <li>{{ form.elo_rating.label }}</li>
+                <li>{{ form.elo_rating.errors }}</li>
+                <li>{{ form.elo_rating }}</li>
+            </ul>
+        </div>
+        <input type="submit" value="Добавить">
+    </form>
+</div>
+{% endblock %}

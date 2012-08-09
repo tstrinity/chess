@@ -2,7 +2,7 @@
 
 __author__ = 'tstrinity'
 
-from Chess.apps.player.models import PlayersInGames
+from Chess.apps.player.models import PlayersInGames, PlayersInTournament
 from Chess.apps.game.models import Game
 
 def create_pairs(tour):
@@ -20,6 +20,7 @@ def create_pairs(tour):
             if popped_player:
                 group.insert(0, popped_player)
                 popped_player = None
+                #sort_by_buhgolz(gruop)
                 if not proceed_group(group):
                     #запоминаем текущую группу для дальнейшего мерджа
                     merge_group = group
@@ -27,26 +28,28 @@ def create_pairs(tour):
             popped_player = group.pop()
 
 
-def create_game(player1, player2):
+def create_game(player1, player2, player1_plays_white):
     #добавить тур
     g = Game()
-    g.add_player(player1, True)
-    g.add_player(player2, False)
+    g.add_player(player1, player1_plays_white)
+    g.add_player(player2, not player1_plays_white)
     g.save()
 
 
 def proceed_group(group):
-    if amount_is_even(group):
-        i = 1
-        while group.count() > 0:
-            if i == len(group):
-                return False
-            if players_not_met_before(group[0],group[-i]):
-                create_game(group[0], group[-i])
+    i = 1
+    while group.count() > 1:
+        if i == len(group):
+            return False
+        if not PlayersInGames.check_if_played(group[0],group[-i]):
+            p1_in_t = PlayersInTournament.objects.get(player_id = group[0].player.id)
+            p2_in_t = PlayersInTournament.objects.get(player_id = group[-i].player.id)
+            if p1_in_t.due_color + p2_in_t.due_color in range(-3,+4):
+                create_game(group[0], group[-i], get_p1_color(group[0], group[-i]))
                 group.remove(group[0])
                 group.remove(group[-i])
-            else:
-                i += 1
+        else:
+            i += 1
 
 
 def create_sub_groups(players):
@@ -64,7 +67,20 @@ def amount_is_even(group):
     else:
         return False
 
+def get_p1_color(p1, p2):
+    if abs(p1.due_color) == 2:
+        p1_white = return_if_white(p1.due_color)
+        return p1_white
+    elif abs(p2.due_color) == 2:
+        p1_white = not return_if_white(p2.due_color)
+        return p1_white
+    else:
+        p1_white = return_if_white(p1.due_color)
+        return p1_white
 
 
-def players_not_met_before(player1, player2):
-    return True
+def return_if_white(due_color):
+    if due_color < 0:
+        return True
+    if due_color > 0:
+        return False

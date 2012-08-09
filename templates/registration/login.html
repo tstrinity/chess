@@ -1,0 +1,15 @@
+{% extends 'master_page.html' %}
+{% block full_content %}
+    <div style="background-color: #000000;">
+    <div style="vertical-align:middle;margin:0 auto; background-color: #000000;width: 175px;">
+    <form method="post" action="" class="login_form">
+        {% csrf_token %}
+        <p><label for="id_username">Имя пользователя:</label></p>
+        <p><input id="id_username" type="text" name="username" maxlength="30" /></p>
+        <p><label for="id_password">Пароль:</label></p>
+        <p><input type="password" name="password" id="id_password" /></p>
+        <input type="submit" value="Вход">
+    </form>
+    </div>
+    </div>
+{% endblock %}

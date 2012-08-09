@@ -4,27 +4,71 @@
     {% load static %}
     {% get_static_prefix as STATIC_PREFIX %}
     {% block includes %}
-        <link rel="stylesheet" href="{{ STATIC_PREFIX }}css/main.css" type="text/css" media="screen" />
+        <link href='http://fonts.googleapis.com/css?family=Arvo' rel='stylesheet' type='text/css'>
+        <link rel="stylesheet" href="{{ STATIC_PREFIX }}css/darkera.css" type="text/css" media="screen" />
     {% endblock %}
     <title>
-        {% block title %}
-        {% endblock %}
+        {% block title %}{% endblock %} &mdash; Chess-Portal
     </title>
 </head>
 <body>
-<div id="layout">
-    <div class="content_left">
-    {% block content %}
-    {% endblock %}
+<div id="wrapper">
+    <div id="header-wrapper">
+    <div id="header">
+        {% include 'login_panel.html' %}
+        <div id="logo">
+            <img src="{{ STATIC_PREFIX }}img/banner-chess-fff.jpg" >
+            <p>Chess-Portal</p>
+        </div>
     </div>
-    <div class="sidebar_right">
-    {% block sidebar %}
-        <ul class="linklist">
-            <li><a href="/tournaments/">Туриниры</a></li>
-            <li><a href="/players/rating/">Рейтинг Эло</a></li>
+    </div>
+    <div id="menu">
+        <ul>
+            <li><a href="/">Главная</a></li>
+            <li><a href="/tournaments/">Турниры</a></li>
+            <li><a href="/players/rating/">Рейтинг</a></li>
+            <li><a href="/about/">О сайте</a></li>
+            <li><a href="/links/">Ссылки</a></li>
+            <li><a href="/feedback/">Обратная свзязь</a></li>
         </ul>
-    {% endblock %}
     </div>
+    <div id="page">
+        <div id="page-bgtop">
+            <div id="page-bgtm">
+                {% block full_content %}
+    <div id="content">
+        {% block content %}
+        {% endblock %}
+    </div>
+    <div id="sidebar">
+        <ul>
+            <li>
+                <h2>Правила турнира</h2>
+                <p>Турниры проводятся по правилам FIDE по швейцарской системе с использованием критерия Бухгольца.</p>
+            </li>
+            <li>
+                <h2>Полезные ссылки</h2>
+                <ul>
+                    <li><a href="www.fide.com">FIDE</a></li>
+                    <li><a href="#">Consectetuer adipiscing elit</a></li>
+                    <li><a href="#">Metus aliquam pellentesque</a></li>
+                    <li><a href="#">Suspendisse iaculis mauris</a></li>
+                    <li><a href="#">Urnanet non molestie semper</a></li>
+                    <li><a href="#">Proin gravida orci porttitor</a></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+    <!-- end #sidebar -->
+            {% endblock %}
+    <div style="clear: both; background-color: #000000;">&nbsp;</div>
+
+     </div>
+     </div>
+    </div>
+ </div>
+<div id="footer">
+    <p>Copyright (c) 2012 Sitename.com. All rights reserved. Design by <a href="http://www.freecsstemplates.org/">FCT</a>.</p>
 </div>
 </body>
 </html>

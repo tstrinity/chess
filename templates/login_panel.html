@@ -1,0 +1,16 @@
+<div id="login_panel">
+    {% if user.is_authenticated %}
+    <div id="panel_list">
+    <ul>
+    <li>Добрый день, {{ user }}</li>
+    <li><a href="/tournaments/create/">Создать турнир</a></li>
+    <li><a href="/tournaments/inactive/">Неактивные турниры</a> </li>
+    <li><a href="/players/create/">Добавить игрока</a></li>
+    <li><a href="/admin/">Админка</a></li>
+    <li><a href="{% url django.contrib.auth.views.logout %}?next={{ request.path }}">Выход</a></li>
+    </ul>
+    </div>
+    {% else %}
+    <a href="{% url django.contrib.auth.views.login %}?next={{request.path}}">Вход</a>
+    {% endif %}
+</div>
