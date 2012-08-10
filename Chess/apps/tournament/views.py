@@ -60,9 +60,14 @@ def details_inactive(request, tournament_id):
                 p_in_t = PlayersInTournament(player = player, tournament_id = tournament_id)
                 p_in_t.save()
                 sign_new_player_form = PlayerAddForm()
-        elif 'button_sign_existing' in request.POST:
-            if sign_new_player_form.is_valid():
-                pass
+        if 'button_sign_existing' in request.POST:
+            if sign_existing_players.is_valid():
+                players = sign_existing_players.cleaned_data['players']
+                for player in players:
+                    if  PlayersInTournament.objects.get(tournament_id = tournament_id, player = player):
+                        p = PlayersInTournament(tournament_id = tournament_id, player = player)
+                        p.save()
+                        sign_existing_players = ManyPlayersAddForm()
     info = get_object_or_404(Tournament, pk=tournament_id).get_inactive_info()
     return render_to_response('tournament/details_inactive.html', {
         'info' : info,
