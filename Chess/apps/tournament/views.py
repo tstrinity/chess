@@ -3,6 +3,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.template.context import RequestContext
 from Chess.apps.tournament.models import Tournament, TournamentAddForm
+from Chess.apps.player.models import PlayerAddForm, ManyPlayersAddForm, PlayersInTournament
 from django.contrib.auth.decorators import login_required
 
 def index(request):
@@ -50,10 +51,24 @@ def index_inactive(request):
 
 @login_required()
 def details_inactive(request, tournament_id):
-    info = get_object_or_404(Tournament, pk=tournament_id).get_info_tour()
-    return render_to_response('tournament/details_inactive.html',
-            {'info' : info},
-        context_instance=RequestContext(request)
+    sign_new_player_form = PlayerAddForm(request.POST or None)
+    sign_existing_players = ManyPlayersAddForm(request.POST or None)
+    if request.method == 'POST':
+        if 'button_sign_new' in request.POST:
+            if sign_new_player_form.is_valid():
+                player = sign_new_player_form.save()
+                p_in_t = PlayersInTournament(player = player, tournament_id = tournament_id)
+                p_in_t.save()
+                sign_new_player_form = PlayerAddForm()
+        elif 'button_sign_existing' in request.POST:
+            if sign_new_player_form.is_valid():
+                pass
+    info = get_object_or_404(Tournament, pk=tournament_id).get_inactive_info()
+    return render_to_response('tournament/details_inactive.html', {
+        'info' : info,
+        'sign_new' : sign_new_player_form,
+        'sign_existing' : sign_existing_players
+        }, context_instance=RequestContext(request)
     )
 
 

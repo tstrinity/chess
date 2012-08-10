@@ -127,3 +127,10 @@ class PlayerAddForm(forms.ModelForm):
     class Meta:
         model = Player
         fields = ('name','elo_rating')
+
+
+class ManyPlayersAddForm(forms.Form):
+    players = forms.ModelMultipleChoiceField(
+        queryset=Player.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+    )

@@ -45,6 +45,17 @@ class Tournament(models.Model):
             raise ValidationError(message=u'Меньше чем два игрока подписано на турнир')
 
 
+    def get_inactive_info(self):
+        result = dict({
+            'id' : self.id,
+            'name': self.name,
+            'prizes': self.prize_positions_amount,
+            'players_count': self._players.count(),
+            'players' : self.player_set.values('id', 'name', 'elo_rating')
+        })
+        return result
+
+
     @timer
     def get_info_tour(self):
         cursor = connection.cursor()

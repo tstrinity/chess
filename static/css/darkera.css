@@ -37,7 +37,7 @@ ul, ol {
 
 a {
 	text-decoration: none;
-	color: #6E7A8A;
+	color: #ff4500;
 }
 
 a:hover {
@@ -227,7 +227,8 @@ img.aligncenter {
 #content {
 	float: right;
 	width: 700px;
-	padding: 0px 0px 0px 0px;
+    padding: 0px 0px 0px 10px;
+    border-left: 5px solid #000000;
 }
 
 .post {
@@ -278,8 +279,8 @@ img.aligncenter {
 #sidebar {
 	float: left;
 	width: 240px;
+    height: 100%;
 	padding: 0px 0px 0px 0px;
-    border-right: 5px solid #000000;
 }
 
 #sidebar ul {
@@ -442,10 +443,7 @@ input[type="text"]:focus {
 
 .input_field {
     margin: 0;
-    padding: 0;
-}
-
-.input_field ul {
+    padding: 0 0 6px;
     list-style: none;
 }
 
@@ -474,4 +472,9 @@ input[type="text"]:focus {
     filter:alpha(opacity=100);
     cursor: pointer;
     text-decoration: none;
+}
+
+.errorlist {
+    padding: 0 0 0 15px;
+    color: red;
 }

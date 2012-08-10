@@ -3,11 +3,47 @@
 {% block content %}
     <div class="post">
         <p><h2 class="title">Детали турнира {{ info.name }}</h2></p>
+        <div class="holder">
+        <div class="left_info" style="float: left;">
         <p>Название турнира: {{ info.name }}</p>
         <p>Количество призовых мест: {{ info.prizes }}</p>
         <p>Количество участников: {{ info.players_count }}</p>
-        <p><a href="/tournaments/{{ info.id }}/start/" class="button">Начать</a></p>
-        Заявленные игроки
+        <p><a href="/tournaments/{{ info.id }}/start/" class="button" style="padding: 8px 18px;">Начать</a></p>
+        </div>
+
+        </div>
+        <div style="clear: both; background-color: #000000;"></div>
+        <div class="left_info" style="float: left; margin-left: 0px; padding: 10px; border: 1px dotted #ff4500; border-radius: 5px">
+            <b>Добавить нового игрока в турнир</b>
+            <form action="" method="POST">
+                {% csrf_token %}
+                {{ sign_new.non_field_errors }}
+                <ul class="input_field">
+                    <li>{{ sign_new.name.errors}}</li>
+                    <li>{{ sign_new.name }}{{ sign_new.name.label }}</li>
+                </ul>
+                <ul class="input_field">
+                    <li>{{ sign_new.elo_rating.errors }}</li>
+                    <li>{{ sign_new.elo_rating }}{{ sign_new.elo_rating.label }}</li>
+                </ul>
+                <input type="submit" value="Добавить" name="button_sign_new">
+            </form>
+        </div>
+        <div style=" float: left; margin-left: 15px;width: 250px; padding: 10px; border: 1px dotted #ff4500; border-radius: 5px">
+            <form action="" method="POST">
+                <b>Добавить игроков</b>
+                {% csrf_token %}
+                <div style="OVERFLOW-Y:scroll; width:245px; height:150px;">
+                <ul class="input_field">
+                    <li>{{ sign_existing.players.errors }}</li>
+                    <li>{{ sign_existing.players }}</li>
+                </ul>
+                </div>
+                <input type="button" value="Добавить" name="button_sign_existing">
+            </form>
+        </div>
+        <div style="clear: both; background-color: #000000;"></div>
+        <b>Заявленные игроки</b>
         <table class="tablesorter">
             <thead>
             <th>Имя</th>
@@ -15,11 +51,14 @@
             <th></th>
             </thead>
             <tbody>
-            {% for tour in info.tours_list %}
+            {% for player in info.players %}
                 <tr>
-                    <td>{{ tour.tour_number }}</td>
-                    <td>{{ tour.game_amount }}</td>
-                    <td>{{ tour.game_done_amount }}</td>
+                    <td>{{ player.name }}</td>
+                    <td>{{ player.elo_rating }}</td>
+                    <td>
+                        <a href="/players/{{ player.id }}/" class="button">Профиль</a>
+                        <a href="" class="button">Исключить</a>
+                    </td>
                 </tr>
             {% endfor %}
             </tbody>
