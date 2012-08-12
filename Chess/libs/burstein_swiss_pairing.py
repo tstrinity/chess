@@ -38,7 +38,7 @@ def create_game(player1, player2, player1_plays_white):
 
 def proceed_group(group):
     i = 1
-    while group.count() > 1:
+    while len(group) > 1:
         if i == len(group):
             return False
         if not PlayersInGames.check_if_played(group[0],group[-i]):

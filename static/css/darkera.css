@@ -88,6 +88,10 @@ img.aligncenter {
 	color: #FFFFFF;
 }
 
+#logo img {
+    filter:alpha(opacity=60);
+}
+
 #logo h1, #logo p {
 	display: block;
 	margin: 0;
@@ -442,6 +446,12 @@ input[type="text"]:focus {
 }
 
 .input_field {
+    margin: 0;
+    padding: 0 0 6px;
+    list-style: none;
+}
+
+.input_field ul {
     margin: 0;
     padding: 0 0 6px;
     list-style: none;

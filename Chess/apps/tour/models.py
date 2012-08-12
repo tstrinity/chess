@@ -1,11 +1,8 @@
 # coding=utf-8
 
 from django.db import models
-from Chess.apps.game.models import Game
-from Chess.apps.player.models import PlayersInTournament, PlayersInGames
-from Chess.libs.first_round_pairing import create_pairs
+from Chess.apps.player.models import  PlayersInGames
 from Chess.libs.helpers import timer
-from Chess.libs.tour import sort_players_by_results
 
 __author__ = 'tstrinity'
 
@@ -28,6 +25,7 @@ class Tour(models.Model):
         иначе
         """
         if self.tour_number == 1:
+            from Chess.libs.first_round_pairing import create_pairs
             create_pairs(self,  0)
         else:
             from Chess.libs.burstein_swiss_pairing import create_pairs

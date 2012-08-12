@@ -76,7 +76,7 @@ class Game(models.Model):
             pg = PlayersInTournament.objects.get(player = looser.player,
                 tournament = tournament)
             pg.add_loose()
-        if self.tour._games.filter(finished = False).count() == 0:
+        if len(self.tour._games.filter(finished = False)) == 0:
             self.tour.tournament.start_new_tour()
             return True
         return False

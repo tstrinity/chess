@@ -131,12 +131,6 @@ class PlayerAddForm(forms.ModelForm):
 
 class ManyPlayersAddForm(forms.Form):
     players = forms.ModelMultipleChoiceField(
-        widget=forms.CheckboxSelectMultiple()
+        widget=forms.CheckboxSelectMultiple,
+        queryset = Player.objects.none()
     )
-
-    def __init__(self, *args, **kwargs):
-        tournament_id = kwargs.pop('tournament_id')
-        super(ManyPlayersAddForm, self).__init__(*args, **kwargs)
-        self.fields['players'].queryset = PlayersInTournament.objects.exclude(
-            tournament_id = tournament_id
-        ).values('players')

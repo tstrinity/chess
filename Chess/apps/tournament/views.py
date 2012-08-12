@@ -3,7 +3,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.template.context import RequestContext
 from Chess.apps.tournament.models import Tournament, TournamentAddForm
-from Chess.apps.player.models import PlayerAddForm, ManyPlayersAddForm, PlayersInTournament
+from Chess.apps.player.models import PlayerAddForm, ManyPlayersAddForm, PlayersInTournament, Player
 from django.contrib.auth.decorators import login_required
 
 def index(request):
@@ -51,24 +51,33 @@ def index_inactive(request):
 
 @login_required()
 def details_inactive(request, tournament_id):
-    sign_new_player_form = PlayerAddForm(request.POST or None)
-    sign_existing_players = ManyPlayersAddForm(request.POST or None)
+    def get_existing_players_add_form():
+        form = ManyPlayersAddForm()
+        form.fields['players'].queryset =\
+            Player.objects.exclude(signed_to_tournaments = tournament_id)
+        return form
+    sign_new_player_form = PlayerAddForm()
+    sign_existing_players = get_existing_players_add_form()
     if request.method == 'POST':
         if 'button_sign_new' in request.POST:
+            sign_new_player_form = PlayerAddForm(request.POST)
             if sign_new_player_form.is_valid():
                 player = sign_new_player_form.save()
                 p_in_t = PlayersInTournament(player = player, tournament_id = tournament_id)
                 p_in_t.save()
-                sign_new_player_form = PlayerAddForm()
         if 'button_sign_existing' in request.POST:
+            sign_existing_players = ManyPlayersAddForm(request.POST)
+            sign_existing_players.fields['players'].queryset =\
+                Player.objects.exclude(signed_to_tournaments = tournament_id)
             if sign_existing_players.is_valid():
                 players = sign_existing_players.cleaned_data['players']
                 for player in players:
-                    if  PlayersInTournament.objects.get(tournament_id = tournament_id, player = player):
+                    if  not PlayersInTournament.objects.filter(
+                        tournament_id=tournament_id, player=player).count():
                         p = PlayersInTournament(tournament_id = tournament_id, player = player)
                         p.save()
-                        sign_existing_players = ManyPlayersAddForm()
-    info = get_object_or_404(Tournament, pk=tournament_id).get_inactive_info()
+                        sign_existing_players = get_existing_players_add_form()
+    info = get_object_or_404(Tournament, pk=tournament_id, active=False).get_inactive_info()
     return render_to_response('tournament/details_inactive.html', {
         'info' : info,
         'sign_new' : sign_new_player_form,
@@ -84,5 +93,4 @@ def start_tournament(request, tournament_id):
         t.start_tournament()
         return redirect('Chess.apps.tournament.views.index')
     except ValidationError:
-        message = Exception.message
         return HttpResponseRedirect('/tournaments/' + str(t.id) + '/inactive/')

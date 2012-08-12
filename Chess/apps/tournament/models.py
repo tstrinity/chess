@@ -38,8 +38,9 @@ class Tournament(models.Model):
 
     def start_tournament(self):
         if self.signed_players.count() > 1:
-            self.create_tours()
             self.active = True
+            self.create_tours()
+            self._tours.all()[0].create_games()
             self.save()
         else:
             raise ValidationError(message=u'Меньше чем два игрока подписано на турнир')
@@ -102,8 +103,9 @@ class Tournament(models.Model):
     @timer
     def start_new_tour(self):
         self.current_tour_number += 1
-        self._tours.all()[self.current_tour_number].create_games()
         self.save()
+        self._tours.all()[self.current_tour_number-1].create_games()
+
 
 
     def return_url(self):

@@ -6,9 +6,25 @@
         <p>Название турнира: {{ info.name }}</p>
         <p>Количество призовых мест: {{ info.prizes }}</p>
         <p>Количество участников: {{ info.players_count }}</p>
+        <table class="tablesorter">
+            <thead>
+            <th>Номер тура</th>
+            <th>Количество игр</th>
+            <th>Сыграных игр
+            <th></th>
+            </thead>
+            <tbody>
+            {% for tour in info.tours_list%}
+                <tr>
+                    <td>{{ tour.tour_number }}</td>
+                    <td>{{ tour.game_amount }}</td>
+                    <td>{{ tour.game_done_amount }}</td>
+                    <td>
+                        <a href="/tours/{{ tour.id }}" class="button">Переход</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
     </div>
-{% endblock %}
-{% block sidebar %}
-    {{ block.super }}
-    <a href="/tournaments/{{ info.id }}/rating">Рейтинг игроков</a>
 {% endblock %}
