@@ -306,7 +306,6 @@ img.aligncenter {
 #sidebar li li {
 	padding-left: 20px;
 	line-height: 35px;
-	/*background: url(images/img07.jpg) no-repeat left 14px;*/
 }
 
 #sidebar li li span {
@@ -339,27 +338,6 @@ img.aligncenter {
 
 #sidebar a:hover {
 	text-decoration: underline;
-}
-
-/* Calendar */
-
-#calendar {
-}
-
-#calendar_wrap {
-	padding: 20px;
-}
-
-#calendar table {
-	width: 100%;
-}
-
-#calendar tbody td {
-	text-align: center;
-}
-
-#calendar #next {
-	text-align: right;
 }
 
 /* Footer */
@@ -487,4 +465,26 @@ input[type="text"]:focus {
 .errorlist {
     padding: 0 0 0 15px;
     color: red;
+}
+
+.button_in_table {
+    border: 0;
+    padding: 5px;
+    height: 30px;
+    width: 80px;
+    text-decoration: none;
+    color: #ff4821;
+    border-radius: 3px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: normal;
+    font-size: 13px;
+    text-indent: 0;
+    text-shadow: none;
+    text-transform: none;
+}
+
+.button_in_table:hover {
+    color: black;
+    background: url(../img/img03.jpg) repeat-x left top;
+    text-decoration: none;
 }

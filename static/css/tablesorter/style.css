@@ -1,6 +1,7 @@
 table.tablesorter {
 	font-size: 12px;
     width: 80%;
+    margin-bottom: 25px;
 }
 table.tablesorter th {
 	text-align: left;

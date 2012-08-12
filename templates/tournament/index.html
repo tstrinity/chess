@@ -6,21 +6,21 @@
     <div class="entry">
         <table class="tablesorter">
             <thead>
-                <th></th>
                 <th>Название</th>
                 <th>Призов</th>
                 <th>Участников</th>
                 <th>Туров</th>
+                <th></th>
             </thead>
             <tbody>
             {% for info_row in info %}
                 <tr>
-                    <td><a href="/tournaments/{{ info_row.id }}/" class="button">
-                        Просмотр</a></td>
                     <td>{{ info_row.name }}</td>
                     <td>{{ info_row.prize_positions_amount }}</td>
                     <td>{{ info_row.players_amount }}</td>
                     <td>{{ info_row.tours_amount }}</td>
+                    <td><a href="/tournaments/{{ info_row.id }}/" class="button_in_table">
+                        Просмотр</a></td>
                 </tr>
             {% endfor %}
             </tbody>

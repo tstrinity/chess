@@ -116,8 +116,16 @@ class Tournament(models.Model):
 
 
 class TournamentAddForm(forms.ModelForm):
-    name = forms.CharField(max_length=50,required=True)
-    prize_positions_amount = forms.IntegerField(min_value=1,required=True)
+    name = forms.CharField(
+        max_length=50,
+        required=True,
+        label=u'Название'
+    )
+    prize_positions_amount = forms.IntegerField(
+        min_value=1,
+        required=True,
+        label=u'Количество призовых мест'
+    )
 
     class Meta:
         model = Tournament
