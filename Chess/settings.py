@@ -60,8 +60,8 @@ STATIC_URL = '/static/'
 
 # Additional locations of static files
 STATICFILES_DIRS = (
-    'E:/Personal/Projects/python/Chess/static',
-    #'/home/tstrinity/Projects/Python/Chess/static',
+    #'E:/Personal/Projects/python/Chess/static',
+    '/home/tstrinity/Projects/Python/Chess/static',
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
 )
@@ -110,7 +110,10 @@ ROOT_URLCONF = 'Chess.urls'
 # Python dotted path to the WSGI application used by Django's runserver.
 WSGI_APPLICATION = 'Chess.wsgi.application'
 
-TEMPLATE_DIRS = ('/home/tstrinity/Projects/Python/Chess/templates','E:/Personal/Projects/python/Chess/templates')
+TEMPLATE_DIRS = (
+    '/home/tstrinity/Projects/Python/Chess/templates',
+    #'E:/Personal/Projects/python/Chess/templates'
+)
 
 INSTALLED_APPS = (
     'django.contrib.auth',

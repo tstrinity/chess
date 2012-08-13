@@ -25,7 +25,7 @@ def get_mo(first_player_rating, second_player_rating):
     ))
     return mo_first_player
 
-def get_new_elo_rating(player_rating, games):
+def get_new_elo_rating(p_in_t, players):
     """
     рассчитывает новый Эло рейтинг игрока
     исходные данные рейтинг игрока и список игр
@@ -33,11 +33,11 @@ def get_new_elo_rating(player_rating, games):
     """
     total_mo = 0
     total_score = 0
-    for game in games:
-        total_mo += get_mo(player_rating, game.enemy_rating)
-        total_score += game.result
-    new_rating = player_rating + get_k_factor(player_rating) * (
-        total_score - mo
+    for p_in_t in players:
+        total_mo += get_mo(p_in_t.player.elo_rating, p_in_t.player.elo_rating)
+        total_score += p_in_t.result
+    new_rating = p_in_t.player.elo_rating + get_k_factor(p_in_t.player.elo_rating) * (
+        total_score - total_mo
     )
     return new_rating
 

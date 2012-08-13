@@ -485,7 +485,7 @@ input[type="text"]:focus {
 }
 
 .button_in_table:hover {
-    color: black;
+    color: white;
     background: url(../img/img03.jpg) repeat-x left top;
     text-decoration: none;
 }

@@ -133,7 +133,7 @@ class Tournament(models.Model):
         """
         переход к следующему туру
         """
-        if self.current_tour_number + 1 > self._tours.count():
+        if self.current_tour_number > self._tours.count():
             self.finished = True
             self.save()
             self.sign_winners()
@@ -143,6 +143,21 @@ class Tournament(models.Model):
             self.save()
             self._tours.all()[self.current_tour_number].create_games()
             return True
+
+
+
+    def calculate_new_elo_rating(self):
+        from Chess.libs.elo_rating import get_new_elo_rating
+        all_players = self._players.select_related(depth = 1)
+        result = []
+        for p_in_t in all_players:
+            new_rating = get_new_elo_rating(p_in_t, p_in_t.played_with())
+            item = {'player' : p_in_t.player, 'new_rating' : new_rating }
+            result.append(item)
+        for item in result:
+            item['player'].elo_rating = item['new_rating']
+            item['player'].save()
+
 
 
     def sign_winners(self):
