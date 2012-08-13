@@ -4,12 +4,15 @@
 
 {% endblock %}
 {% block content %}
+    <div class="post">
+    <h2 class="title">Рейтинг игроков</h2>
     <table class="tablesorter">
         <thead>
         <tr>
             <th>Имя</th>
             <th>Игр проведено</th>
             <th>Результат</th>
+            <th>Место</th>
         </tr>
         </thead>
         <tbody>
@@ -18,9 +21,12 @@
                 <td>{{ info_row.player__name }}</td>
                 <td>{{ info_row.games_played }}</td>
                 <td>{{ info_row.result }}</td>
+                <td>{{ info_row.result_position }}</td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
+    <p><a href = "javascript:history.back()" class="button">Назад</a></p>
+    </div>
 {% endblock %}
 

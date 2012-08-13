@@ -232,7 +232,6 @@ img.aligncenter {
 	float: right;
 	width: 700px;
     padding: 0px 0px 0px 10px;
-    border-left: 5px solid #000000;
 }
 
 .post {
@@ -285,6 +284,7 @@ img.aligncenter {
 	width: 240px;
     height: 100%;
 	padding: 0px 0px 0px 0px;
+    border-right: 5px solid #000000;
 }
 
 #sidebar ul {
@@ -407,6 +407,7 @@ input[type="text"]:focus {
 }
 
 #panel_list {
+    padding-top: 15px;
     width: 200px;
     height: 100px;
     background: #000000;

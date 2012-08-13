@@ -7,8 +7,14 @@
     <script>
         $(document).ready(function()
                 {
-                    $(".tablesorter").tablesorter({
-                        widgets: ['zebra']
+
+                    $('table.tablesorter').each(function (i, e) {
+                        var myHeaders = {}
+                        $(this).find('th.nosort').each(function (i, e) {
+                            myHeaders[$(this).index()] = { sorter: false };
+                        });
+
+                        $(this).tablesorter({ widgets: ['zebra'], headers: myHeaders });
                     });
                 }
         );

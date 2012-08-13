@@ -8,7 +8,6 @@ table.tablesorter th {
 	padding: 5px;
 }
 table.tablesorter td {
-    color:#666;
     text-shadow:1px 1px 1px #fff;
 	padding: 5px;
 }
@@ -18,7 +17,7 @@ table.tablesorter .even {
 }
 
 table.tablesorter .odd {
-	background-color: #d4d5ff;
+	background-color: #fff5e7;
 }
 table.tablesorter .header {
 	background-image: url(bg.png);

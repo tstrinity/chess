@@ -34,9 +34,30 @@ class PlayersInTournament(models.Model):
     result = models.FloatField(default = 0.0)
     games_played = models.IntegerField(default=0)
     due_color = models.IntegerField(default=0)
+    result_position = models.IntegerField(default = 0, blank = True)
     has_bye = models.BooleanField(default=False)
     player = models.ForeignKey('Player', related_name='_tournaments')
     tournament = models.ForeignKey('tournament.Tournament' ,related_name='_players')
+
+
+    def played_with(self):
+        cursor = connection.cursor()
+        cursor.execute("SELECT g2.player_id FROM\
+                chess_db.player_in_game\
+                INNER JOIN chess_db.player_in_game AS g2\
+                ON chess_db.player_in_game.game_id = g2.game_id AND\
+                chess_db.player_in_game.player_id <> g2.player_id\
+                WHERE chess_db.player_in_game.tournament_id = %s AND\
+                chess_db.player_in_game.player_id = %s" , [self.tournament_id, self.player_id]
+        )
+        result = get_result_dic(cursor)
+        players_in_tournaments = []
+        for res in result:
+            players_in_tournaments.append(
+                PlayersInTournament.objects.get(player_id = res['player_id'],
+                    tournament_id = self.tournament_id)
+            )
+        return players_in_tournaments
 
     class Meta:
         db_table = 'player_in_tournament'
@@ -75,23 +96,25 @@ class PlayersInGames(models.Model):
     game_result = models.IntegerField(choices = GAME_RESULTS, default = 0)
     player = models.ForeignKey('player.Player', related_name='_games')
     game = models.ForeignKey('game.Game', related_name='_players')
+    tournament_id = models.IntegerField(max_length=11)
 
 
     class Meta:
         db_table = 'player_in_game'
 
     @staticmethod
-    def check_if_played(player1, player2):
+    def check_if_played(player1, player2, tournament_id):
         cursor = connection.cursor()
         cursor.execute("SELECT count(*) FROM\
                 chess_db.player_in_game\
-                INNER JOIN chess_db.player_in_game as g2\
-                on chess_db.player_in_game.game_id = g2.game_id and\
+                INNER JOIN chess_db.player_in_game AS g2\
+                ON chess_db.player_in_game.game_id = g2.game_id AND\
                 chess_db.player_in_game.player_id <> g2.player_id\
-                where chess_db.player_in_game.player_id in (%s,%s) and\
-                g2.player_id in (%s,%s);" ,
-        [player1.player.id, player2.player.id,
-         player1.player.id, player2.player.id]
+                WHERE chess_db.player_in_game.tournament_id = %s AND\
+                chess_db.player_in_game.player_id in (%s,%s) AND\
+                g2.player_id IN (%s,%s);" ,
+        [tournament_id, player1.id, player2.id,
+         player1.id, player2.id]
         )
         result = get_result_dic(cursor)
         if result[0]['count(*)'] > 0:

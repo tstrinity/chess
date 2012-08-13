@@ -22,7 +22,9 @@ class Game(models.Model):
         player_in_game = PlayersInGames(
             game = self,
             player = player,
-            plays_white = plays_white)
+            plays_white = plays_white,
+            tournament_id = self.tour.tournament.id
+        )
         player_in_game.save()
         player_in_tournament = PlayersInTournament.objects.get(
             tournament = self.tour.tournament,
@@ -76,7 +78,6 @@ class Game(models.Model):
             pg = PlayersInTournament.objects.get(player = looser.player,
                 tournament = tournament)
             pg.add_loose()
-        if len(self.tour._games.filter(finished = False)) == 0:
-            self.tour.tournament.start_new_tour()
-            return True
+        if not len(self.tour._games.filter(finished=False)):
+            return self.tour.tournament.start_new_tour()
         return False

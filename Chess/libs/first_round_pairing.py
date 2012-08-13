@@ -31,8 +31,9 @@ def create_pairs(tour, pairing_method):
     for i in range(0,players_amount, 2):
         g = Game(tour = tour)
         g.save()
-        g.add_player(sorted_players[i], bool(first_player_color_white) and i % 2 == 0)
-        g.add_player(sorted_players[i + 1], bool(first_player_color_white) and (i+1) % 2 == 0)
+        white = bool(first_player_color_white) and i % 2 == 0
+        g.add_player(sorted_players[i], white)
+        g.add_player(sorted_players[i + 1], not white)
 
 
 def pairing_method_fold_pairing(sorted_players):

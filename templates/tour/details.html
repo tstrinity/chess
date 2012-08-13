@@ -1,12 +1,16 @@
 {% extends 'tournament/master_page.html' %}
+{% block title %}Детали тура {% endblock %}
 {% load player_tags %}
 {% block content %}
+    <div class="post">
+    <p><h2 class="title">Детали тура</h2></p>
+    <p><a href = "javascript:history.back()" class="button">Вернуться</a></p>
     <table class="tablesorter">
         <thead>
         <th>Участник 1</th>
         <th>Резульатат</th>
         <th>Участник 2</th>
-        <th>Введите результат</th>
+        <th class="nosort">Введите результат</th>
         </thead>
         <tbody>
             {% for game in info %}
@@ -41,4 +45,5 @@
             {% endfor %}
         </tbody>
     </table>
+    </div>
 {% endblock %}

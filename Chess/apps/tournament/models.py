@@ -3,6 +3,7 @@
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models.aggregates import Count
+from Chess.apps.player.models import PlayersInTournament
 from Chess.libs.helpers import get_result_dic
 from django.db import connection
 from Chess.libs.helpers import timer
@@ -26,10 +27,30 @@ class Tournament(models.Model):
         db_table = 'tournament'
 
 
+    def get_winners_info(self):
+        """
+        возращает список выйгравшних
+        """
+        result = self._players.all().order_by('-result').\
+            values('player__name', 'result')[:self.prize_positions_amount]
+        return result
+
+
+    @timer
+    def get_players_ratings(self):
+        """
+        рейтинг игроков в турнире
+        """
+        return  self._players.values('player__name', 'games_played', 'result', 'result_position').order_by('-result')
+
+
     @staticmethod
     @timer
     def get_all_info(started):
-        result = Tournament.objects.values('id','name','prize_positions_amount')\
+        """
+        возвращает сводку по турниру
+        """
+        result = Tournament.objects.values('id','name','prize_positions_amount','finished')\
             .filter(active=started)\
             .annotate(tours_amount = Count('_tours', distinct= True),
                 players_amount = Count('_players', distinct = True))
@@ -37,6 +58,9 @@ class Tournament(models.Model):
 
 
     def start_tournament(self):
+        """
+        запуск турнира
+        """
         if self.signed_players.count() > 1:
             self.active = True
             self.create_tours()
@@ -47,6 +71,9 @@ class Tournament(models.Model):
 
 
     def get_inactive_info(self):
+        """
+        возврщает данные неактивного турнира
+        """
         result = dict({
             'id' : self.id,
             'name': self.name,
@@ -59,6 +86,10 @@ class Tournament(models.Model):
 
     @timer
     def get_info_tour(self):
+        """
+        возврщает информацию по турниру
+        его хар-ки и список туров
+        """
         cursor = connection.cursor()
         cursor.execute("SELECT * FROM\
                 (SELECT *,\
@@ -72,26 +103,23 @@ class Tournament(models.Model):
         [self.id]
         )
         tours_list = get_result_dic(cursor)
-        players_results = self._players.values('player__name', 'result')
         result = dict({
             'id' : self.id,
             'name': self.name,
             'prizes': self.prize_positions_amount,
+            'finished': self.finished,
             'players_count': self._players.count(),
             'tours_amount' : self._tours.count(),
             'tours_list': tours_list,
-            'players_results': players_results
         })
         return result
 
 
     @timer
-    def get_players_ratings(self):
-        return  self._players.values('player__name', 'games_played', 'result').order_by('-result')
-
-
-    @timer
     def create_tours(self):
+        """
+        расчет количества туров и создание
+        """
         player_amount = self._players.count()
         from Chess.libs.tour import calculate_tours_amount
         tours_amount = calculate_tours_amount(player_amount, self.prize_positions_amount)
@@ -102,9 +130,52 @@ class Tournament(models.Model):
 
     @timer
     def start_new_tour(self):
-        self.current_tour_number += 1
-        self.save()
-        self._tours.all()[self.current_tour_number-1].create_games()
+        """
+        переход к следующему туру
+        """
+        if self.current_tour_number + 1 > self._tours.count():
+            self.finished = True
+            self.save()
+            self.sign_winners()
+            return False
+        else:
+            self.current_tour_number += 1
+            self.save()
+            self._tours.all()[self.current_tour_number].create_games()
+            return True
+
+
+    def sign_winners(self):
+        from Chess.libs.burstein_swiss_pairing import get_buhgolz
+        all_players = PlayersInTournament.objects.filter(tournament = self)
+        sorted_players = sorted(all_players, key = lambda player: player.result, reverse = True)
+        from Chess.libs.burstein_swiss_pairing import create_sub_groups
+        groups = create_sub_groups(sorted_players)
+        group_keys = sorted(groups.keys(), reverse = True)
+        current_prize_position = 1
+        for group_key in group_keys:
+            group = groups[group_key]
+            group_with_buhgolz = []
+            for player in group:
+                rating = get_buhgolz(player = player.player, tournament = self)
+                group_with_buhgolz.append(
+                    {
+                        'buhgolz' : rating,
+                        'p_in_t' : player
+                    }
+                )
+            sorted_players = sorted(group_with_buhgolz,
+                key= lambda item: item['buhgolz'],
+                reverse=True
+            )
+            for item in sorted_players:
+                item['p_in_t'].result_position = current_prize_position
+                item['p_in_t'].save()
+                current_prize_position += 1
+
+
+
+
 
 
 
