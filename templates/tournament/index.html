@@ -10,6 +10,7 @@
                 <th>Призов</th>
                 <th>Участников</th>
                 <th>Туров</th>
+                <th>Состояние</th>
                 <th class="nosort"></th>
             </thead>
             <tbody>
@@ -19,6 +20,13 @@
                     <td>{{ info_row.prize_positions_amount }}</td>
                     <td>{{ info_row.players_amount }}</td>
                     <td>{{ info_row.tours_amount }}</td>
+                    <td>
+                        {% if info_row.finished %}
+                            Завершен
+                        {% else %}
+                            Активен
+                        {% endif %}
+                    </td>
                     <td><a href="/tournaments/{{ info_row.id }}/" class="button_in_table">
                         Просмотр</a></td>
                 </tr>

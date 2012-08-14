@@ -7,8 +7,16 @@ __author__ = 'tstrinity'
 
 
 class Player(models.Model):
-    name = models.CharField(max_length=50, unique=True)
-    elo_rating = models.IntegerField(max_length=4, db_index = True)
+    name = models.CharField(
+        max_length=50,
+        unique=True,
+        verbose_name=u'Имя'
+    )
+    elo_rating = models.IntegerField(
+        max_length=4,
+        db_index = True,
+        verbose_name=u'Эло рейтинг'
+    )
     signed_to_tournaments = models.ManyToManyField(
         'tournament.Tournament',
         through = 'PlayersInTournament',
@@ -65,6 +73,7 @@ class PlayersInTournament(models.Model):
 
     def add_bye(self):
         self.has_bye = True
+        self.result += 1
         self.save()
 
 

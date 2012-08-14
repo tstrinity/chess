@@ -1,5 +1,7 @@
-from Chess.apps.player.models import PlayersInTournament, Player
+from django.contrib.sites.models import Site
+from Chess.apps.player.models import PlayersInTournament, Player, PlayersInGames
 from Chess.apps.tour.models import Tour
+from Chess.apps.game.models import Game
 
 __author__ = 'tstrinity'
 
@@ -15,17 +17,31 @@ class TourInline(admin.StackedInline):
 
 class PlayersInTournamentsInline(admin.TabularInline):
     model = PlayersInTournament
-    extra = 1
 
+
+class PlayerInGamesInline(admin.TabularInline):
+    model = PlayersInGames
 
 class PlayerInline(admin.TabularInline):
     model = Player
 
 
+class GameAdmin(admin.ModelAdmin):
+    inlines = [
+        PlayerInGamesInline,
+    ]
+
+    fields = ['tour']
+    readonly_fields = ['tour']
+
+    def has_add_permission(self, request):
+        return False
+
+
 class PlayerAdmin(admin.ModelAdmin):
     inlines = [
         PlayersInTournamentsInline,
-        ]
+    ]
 
 
 class TournamentAdmin(admin.ModelAdmin):
@@ -35,4 +51,7 @@ class TournamentAdmin(admin.ModelAdmin):
         ]
     readonly_fields = ['prize_positions_amount']
 
+admin.site.unregister(Site)
 admin.site.register(Tournament,TournamentAdmin)
+admin.site.register(Game, GameAdmin)
+admin.site.register(Player)

@@ -3,12 +3,15 @@
 {% block content %}
     <div class="post">
         <p><h2 class="title">Детали турнира {{ info.name }}</h2></p>
-        <p>Название турнира: {{ info.name }}</p>
-        <p>Количество призовых мест: {{ info.prizes }}</p>
-        <p>Количество участников: {{ info.players_count }}</p>
+        <ul class="info_list">
+        <li>Название турнира: {{ info.name }}</li>
+        <li>Количество призовых мест: {{ info.prizes }}</li>
+        <li>Количество участников: {{ info.players_count }}</li>
+        <li>Метод группировки в 1 раунде: {{ info.pairing_method_first }}</li>
         {% if info.finished %}
-            <p>Завершен</p>
+        <li>Состояние: <b>Завершен</b></li>
         {% endif %}
+        </ul>
         <div class="button_panel">
             <p><a href="/tournaments/{{ info.id }}/rating/" class="button">Результаты</a></p>
         </div>

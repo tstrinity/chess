@@ -25,11 +25,13 @@ class Tour(models.Model):
         иначе
         """
         if self.tour_number == 1:
-            from Chess.libs.first_round_pairing import create_pairs
-            create_pairs(self,  0)
+            from Chess.libs.first_round_pairing import FirstRoundPairing
+            pairing = FirstRoundPairing(self)
+            pairing.create_pairs(self.tournament.pairing_method_first)
         else:
-            from Chess.libs.burstein_swiss_pairing import create_pairs
-            create_pairs(self)
+            from Chess.libs.burstein_swiss_pairing import BursteinSwissPairing
+            pairing = BursteinSwissPairing(self)
+            pairing.create_pairs()
 
 
     @timer
@@ -53,4 +55,4 @@ class Tour(models.Model):
 
 
     def __unicode__(self):
-        return u'Тур ' + str(self.tour_number)
+        return u'Тур ' + str(self.tour_number) + u' - ' + self.tournament.name

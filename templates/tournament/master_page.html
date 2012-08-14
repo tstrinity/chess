@@ -5,18 +5,15 @@
     <script type="text/javascript" src="{{ STATIC_PREFIX }}js/jquery-1.7.2.min.js"></script>
     <script type="text/javascript" src="{{ STATIC_PREFIX }}js/jquery.tablesorter.min.js"></script>
     <script>
-        $(document).ready(function()
-                {
+    $(document).ready(function(){
+        $('table.tablesorter').each(function (i, e) {
+            var myHeaders = {}
+            $(this).find('th.nosort').each(function (i, e) {
+                myHeaders[$(this).index()] = { sorter: false };
+            });
 
-                    $('table.tablesorter').each(function (i, e) {
-                        var myHeaders = {}
-                        $(this).find('th.nosort').each(function (i, e) {
-                            myHeaders[$(this).index()] = { sorter: false };
-                        });
-
-                        $(this).tablesorter({ widgets: ['zebra'], headers: myHeaders });
-                    });
-                }
-        );
+            $(this).tablesorter({ widgets: ['zebra'], headers: myHeaders });
+        });
+    });
     </script>
 {% endblock %}

@@ -16,6 +16,12 @@ class Game(models.Model):
     class Meta:
         db_table = 'game'
 
+    def __unicode__(self):
+        players = self._players.all()
+        p1_name = players[0].player.name
+        p2_name = players[1].player.name
+        return self.tour.tournament.name + ' : ' + p1_name + ' - ' + p2_name
+
 
     @timer
     def add_player(self, player, plays_white):

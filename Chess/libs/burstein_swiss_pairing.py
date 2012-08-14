@@ -3,54 +3,76 @@
 __author__ = 'tstrinity'
 
 from Chess.apps.player.models import PlayersInGames, PlayersInTournament
-from Chess.apps.game.models import Game
 
-def create_pairs(tour):
-    players = tour.tournament._players.all()
-    groups = create_sub_groups(players)
-    #получаем список отсортированных по убыванию ключей груп
-    group_keys = sorted(groups.keys(), reverse = True)
-    popped_player = None
-    merge_group = None
-    for group_key in group_keys:
-        group = groups[group_key]
-        if merge_group:
-            group += merge_group
-        if len(group) > 1 or popped_player:
-            if popped_player:
-                group.insert(0, popped_player)
-                popped_player = None
-                #sort_by_buhgolz(gruop)
-            if not proceed_group(group, tour):
-                    #запоминаем текущую группу для дальнейшего мерджа
-                merge_group = group
+class BursteinSwissPairing():
+    def __init__(self, tour):
+        self.__tour = tour
+        self.__popped_player = None
+
+    def __create_game(self, player1, player2, player1_plays_white):
+        g = self.__tour._games.create()
+        g.add_player(player1, player1_plays_white)
+        g.add_player(player2, not player1_plays_white)
+        g.save()
+
+
+    def __proceed_group(self, group):
+        i = 1
+        while len(group) > 1:
+            if i == len(group):
+                return False
+            if not PlayersInGames.check_if_played(group[0].player, group[-i].player, self.__tour.tournament_id):
+                p1_in_t = PlayersInTournament.objects.get(player_id = group[0].player.id,
+                    tournament_id = self.__tour.tournament_id)
+                p2_in_t = PlayersInTournament.objects.get(player_id = group[-i].player.id,
+                    tournament_id = self.__tour.tournament_id)
+                if p1_in_t.due_color + p2_in_t.due_color in range(-3,+4):
+                    self.__create_game(group[0].player, group[-i].player,  self.__get_p1_color(group[0], group[-i]))
+                    group.remove(group[0])
+                    group.remove(group[-i])
+            else:
+                i += 1
+
+    def __get_p1_color(self, p1, p2):
+        if abs(p1.due_color) == 2:
+            p1_white = return_if_white(p1.due_color)
+            return p1_white
+        elif abs(p2.due_color) == 2:
+            p1_white = not return_if_white(p2.due_color)
+            return p1_white
         else:
-            popped_player = group.pop()
+            p1_white = return_if_white(p1.due_color)
+            return p1_white
+
+    def create_pairs(self):
+        players = self.__tour.tournament._players.all()
+        groups = create_sub_groups(players)
+        #получаем список отсортированных по убыванию ключей груп
+        group_keys = sorted(groups.keys(), reverse = True)
+        popped_player = None
+        merge_group = None
+        for group_key in group_keys:
+            group = groups[group_key]
+            if merge_group:
+                group += merge_group
+            if len(group) > 1 or popped_player:
+                if popped_player:
+                    group.insert(0, popped_player)
+                    popped_player = None
+                    #sort_by_buhgolz(gruop)
+                if not self.__proceed_group(group):
+                #запоминаем текущую группу для дальнейшего мерджа
+                    merge_group = group
+            else:
+                popped_player = group.pop()
 
 
-def create_game(player1, player2, player1_plays_white, tour):
-    g = tour._games.create()
-    g.add_player(player1, player1_plays_white)
-    g.add_player(player2, not player1_plays_white)
-    g.save()
 
-
-def proceed_group(group, tour):
-    i = 1
-    while len(group) > 1:
-        if i == len(group):
-            return False
-        if not PlayersInGames.check_if_played(group[0].player, group[-i].player, tour.tournament_id):
-            p1_in_t = PlayersInTournament.objects.get(player_id = group[0].player.id,
-                tournament_id = tour.tournament_id)
-            p2_in_t = PlayersInTournament.objects.get(player_id = group[-i].player.id,
-                tournament_id = tour.tournament_id)
-            if p1_in_t.due_color + p2_in_t.due_color in range(-3,+4):
-                create_game(group[0].player, group[-i].player, get_p1_color(group[0], group[-i]), tour)
-                group.remove(group[0])
-                group.remove(group[-i])
-        else:
-            i += 1
+def return_if_white(due_color):
+    if due_color <= 0:
+        return True
+    if due_color > 0:
+        return False
 
 
 def create_sub_groups(players):
@@ -66,24 +88,6 @@ def amount_is_even(group):
     if group.count() % 2 == 0:
         return True
     else:
-        return False
-
-def get_p1_color(p1, p2):
-    if abs(p1.due_color) == 2:
-        p1_white = return_if_white(p1.due_color)
-        return p1_white
-    elif abs(p2.due_color) == 2:
-        p1_white = not return_if_white(p2.due_color)
-        return p1_white
-    else:
-        p1_white = return_if_white(p1.due_color)
-        return p1_white
-
-
-def return_if_white(due_color):
-    if due_color <= 0:
-        return True
-    if due_color > 0:
         return False
 
 

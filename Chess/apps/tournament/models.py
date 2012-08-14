@@ -9,12 +9,20 @@ from django.db import connection
 from Chess.libs.helpers import timer
 from django import forms
 
+PAIRING_FIRST_ROUND = (
+    (0, u'Резня'),
+    (1, u'Пересеченная группировка'),
+    (2, u'Смежная группировка'),
+    (3, u'Группировка случайным образом')
+)
+
 class Tournament(models.Model):
     name = models.CharField(max_length=50)
-    prize_positions_amount = models.IntegerField(max_length=2)
+    prize_positions_amount = models.SmallIntegerField(default=0)
     active = models.BooleanField(default=False)
     finished = models.BooleanField(default=False)
     current_tour_number = models.IntegerField(default=0)
+    pairing_method_first = models.SmallIntegerField(default=0, choices=PAIRING_FIRST_ROUND)
     signed_players = models.ManyToManyField(
         'player.Player',
         through='player.PlayersInTournament',
@@ -63,9 +71,9 @@ class Tournament(models.Model):
         """
         if self.signed_players.count() > 1:
             self.active = True
-            self.create_tours()
-            self._tours.all()[0].create_games()
             self.save()
+            self.create_tours()
+            self.start_new_tour()
         else:
             raise ValidationError(message=u'Меньше чем два игрока подписано на турнир')
 
@@ -79,13 +87,14 @@ class Tournament(models.Model):
             'name': self.name,
             'prizes': self.prize_positions_amount,
             'players_count': self._players.count(),
+            'pairing_method_first': self.get_pairing_method_first_display(),
             'players' : self.player_set.values('id', 'name', 'elo_rating')
         })
         return result
 
 
     @timer
-    def get_info_tour(self):
+    def get_tournament_details(self):
         """
         возврщает информацию по турниру
         его хар-ки и список туров
@@ -110,6 +119,7 @@ class Tournament(models.Model):
             'finished': self.finished,
             'players_count': self._players.count(),
             'tours_amount' : self._tours.count(),
+            'pairing_method_first' : self.get_pairing_method_first_display(),
             'tours_list': tours_list,
         })
         return result
@@ -133,16 +143,16 @@ class Tournament(models.Model):
         """
         переход к следующему туру
         """
-        if self.current_tour_number > self._tours.count():
+        if self.current_tour_number >= self._tours.count():
             self.finished = True
             self.save()
             self.sign_winners()
-            return False
+            self.calculate_new_elo_rating()
         else:
             self.current_tour_number += 1
             self.save()
-            self._tours.all()[self.current_tour_number].create_games()
-            return True
+            self._tours.all()[self.current_tour_number - 1].create_games()
+        return True
 
 
 
@@ -189,13 +199,9 @@ class Tournament(models.Model):
                 current_prize_position += 1
 
 
-
-
-
-
-
     def return_url(self):
         return '/tournaments/' + str(self.id) + '/'
+
 
     def __unicode__(self):
         return self.name
@@ -212,7 +218,17 @@ class TournamentAddForm(forms.ModelForm):
         required=True,
         label=u'Количество призовых мест'
     )
+    pairing_method_first = forms.IntegerField(
+        min_value=0,
+        max_value=3,
+        label=u'Метод группировки первого раунда',
+        required=True,
+        initial=0,
+        widget=forms.RadioSelect(
+            choices = PAIRING_FIRST_ROUND
+        )
+    )
 
     class Meta:
         model = Tournament
-        fields = ('name', 'prize_positions_amount')
+        fields = ('name', 'prize_positions_amount', 'pairing_method_first')

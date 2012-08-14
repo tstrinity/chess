@@ -14,7 +14,7 @@ def index(request):
 
 def details(request, tournament_id):
     t = get_object_or_404(Tournament, pk = tournament_id, active=True)
-    info = t.get_info_tour()
+    info = t.get_tournament_details()
     return render_to_response('tournament/details.html',
         {'info' : info},
         context_instance=RequestContext(request)

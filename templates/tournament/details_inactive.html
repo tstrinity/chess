@@ -5,15 +5,18 @@
         <p><h2 class="title">Детали турнира {{ info.name }}</h2></p>
         <div class="holder">
         <div class="left_info" style="float: left;">
-        <p>Название турнира: {{ info.name }}</p>
-        <p>Количество призовых мест: {{ info.prizes }}</p>
-        <p>Количество участников: {{ info.players_count }}</p>
+        <ul class="info_list">
+            <li>Название турнира: {{ info.name }}</li>
+            <li>Количество призовых мест: {{ info.prizes }}</li>
+            <li>Количество участников: {{ info.players_count }}</li>
+            <li>Метод группировки в 1 раунде: {{ info.pairing_method_first }}</li>
+        </ul>
         <p><a href="/tournaments/{{ info.id }}/start/" class="button" style="padding: 8px 18px;">Начать</a></p>
         </div>
 
         </div>
         <div style="clear: both; background-color: #000000;"></div>
-        <div class="left_info" style="float: left; margin-left: 0px; padding: 10px; border: 1px dotted #ff4500; border-radius: 5px">
+        <div class="left_panel" style="border: 1px dotted #ff4500; border-radius: 5px; padding: 10px">
             <b>Добавить нового игрока в турнир</b>
             <form action="" method="POST">
                 {% csrf_token %}
@@ -29,7 +32,7 @@
                 <input type="submit" value="Добавить" name="button_sign_new">
             </form>
         </div>
-        <div style=" float: left; margin-left: 15px;width: 250px; padding: 10px; border: 1px dotted #ff4500; border-radius: 5px">
+        <div class="right_panel" style="width: 250px;border: 1px dotted #ff4500; border-radius: 5px;padding: 10px">
             <form action="" method="POST">
                 <b>Добавить игроков</b>
                 {% csrf_token %}

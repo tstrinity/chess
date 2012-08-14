@@ -1,8 +1,5 @@
 {% extends 'tournament/master_page.html' %}
-{% block includes %}
-    {{ block.super }}
-
-{% endblock %}
+{% block title %}Турнирная таблица{% endblock %}
 {% block content %}
     <div class="post">
     <h2 class="title">Рейтинг игроков</h2>
@@ -26,7 +23,7 @@
         {% endfor %}
         </tbody>
     </table>
-    <p><a href = "javascript:history.back()" class="button">Назад</a></p>
+    <p><a href = "javascript:history.back()" class="button">Вернуться</a></p>
     </div>
 {% endblock %}
 

@@ -1,10 +1,13 @@
 {% extends 'master_page.html' %}
+{% block title %}Добавить турнир{% endblock %}
 {% block content %}
     <div class="post">
+        <div class="entry">
         <h2 class="title">Добавить турнир</h2>
         <form action="/tournaments/create/" method="POST">
             {% csrf_token %}
             {{ form.non_field_errors }}
+            <div class="left_panel">
             <div class="input_field">
                 <ul>
                     <li>{{ form.name.label }}</li>
@@ -19,7 +22,19 @@
                     <li>{{ form.prize_positions_amount }}</li>
                 </ul>
             </div>
-            <input type="submit" value="Добавить">
+            </div>
+            <div class="right_panel">
+            <div class="input_field">
+                <ul>
+                    <li>{{ form.pairing_method_first.label }}</li>
+                    <li>{{ form.pairing_method_first.errors }}</li>
+                    <li>{{ form.pairing_method_first }}</li>
+                </ul>
+            </div>
+            </div>
+            <div style="clear: both; background-color: #000000;"></div>
+            <p><input type="submit" value="Добавить"></p>
         </form>
+        </div>
     </div>
 {% endblock %}
