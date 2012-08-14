@@ -17,12 +17,16 @@ PAIRING_FIRST_ROUND = (
 )
 
 class Tournament(models.Model):
-    name = models.CharField(max_length=50)
-    prize_positions_amount = models.SmallIntegerField(default=0)
-    active = models.BooleanField(default=False)
-    finished = models.BooleanField(default=False)
-    current_tour_number = models.IntegerField(default=0)
-    pairing_method_first = models.SmallIntegerField(default=0, choices=PAIRING_FIRST_ROUND)
+    name = models.CharField(max_length=50, verbose_name=u'Название')
+    prize_positions_amount = models.SmallIntegerField(default=0, verbose_name=u'Призовых мест')
+    active = models.BooleanField(default=False, verbose_name=u'Активен')
+    finished = models.BooleanField(default=False, verbose_name=u'Окончен')
+    current_tour_number = models.IntegerField(default=0, verbose_name=u'Номер тура')
+    pairing_method_first = models.SmallIntegerField(
+        default=0,
+        choices=PAIRING_FIRST_ROUND,
+        verbose_name=u'Тип группировки первого раунда'
+    )
     signed_players = models.ManyToManyField(
         'player.Player',
         through='player.PlayersInTournament',
@@ -33,6 +37,8 @@ class Tournament(models.Model):
 
     class Meta:
         db_table = 'tournament'
+        verbose_name = u'Турнир'
+        verbose_name_plural = u'Турниры'
 
 
     def get_winners_info(self):

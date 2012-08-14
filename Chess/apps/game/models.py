@@ -1,3 +1,4 @@
+# coding=utf-8
 from django.db import models, connection
 from Chess.apps.player.models import PlayersInGames, PlayersInTournament
 from Chess.libs.helpers import timer, get_result_dic
@@ -6,15 +7,18 @@ __author__ = 'tstrinity'
 
 
 class Game(models.Model):
-    finished = models.BooleanField(default = False)
-    tour = models.ForeignKey('tour.Tour', related_name ='_games')
+    finished = models.BooleanField(default = False, verbose_name=u'Окончена')
+    tour = models.ForeignKey('tour.Tour', related_name ='_games', verbose_name=u'Тур')
     signed_players = models.ManyToManyField(
         'player.Player',
         through='player.PlayersInGames',
+        verbose_name=u'Игроки'
     )
 
     class Meta:
         db_table = 'game'
+        verbose_name = u'Игра'
+        verbose_name_plural = u'Игры'
 
     def __unicode__(self):
         players = self._players.all()

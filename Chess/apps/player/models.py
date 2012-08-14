@@ -37,13 +37,15 @@ class Player(models.Model):
 
     class Meta:
         db_table =  'player'
+        verbose_name = u'Игрок'
+        verbose_name_plural = u'Игроки'
 
 class PlayersInTournament(models.Model):
-    result = models.FloatField(default = 0.0)
-    games_played = models.IntegerField(default=0)
-    due_color = models.IntegerField(default=0)
-    result_position = models.IntegerField(default = 0, blank = True)
-    has_bye = models.BooleanField(default=False)
+    result = models.FloatField(default = 0.0, verbose_name=u'Результат')
+    games_played = models.IntegerField(default=0, verbose_name=u'Сыграно партий')
+    due_color = models.IntegerField(default=0, verbose_name=u'Ожидаемый цвет')
+    result_position = models.IntegerField(default = 0, blank = True, verbose_name=u'Итоговое место')
+    has_bye = models.BooleanField(default=False, verbose_name=u'Выйгрыш без игры')
     player = models.ForeignKey('Player', related_name='_tournaments')
     tournament = models.ForeignKey('tournament.Tournament' ,related_name='_players')
 
@@ -69,6 +71,8 @@ class PlayersInTournament(models.Model):
 
     class Meta:
         db_table = 'player_in_tournament'
+        verbose_name = u'Участвует в турнире'
+        verbose_name_plural = u'Участвуют в турнире'
 
 
     def add_bye(self):
@@ -93,13 +97,16 @@ class PlayersInTournament(models.Model):
         self.games_played += 1
         self.save()
 
+    def __unicode__(self):
+        return u'Участник турнира'
+
 
 class PlayersInGames(models.Model):
     GAME_RESULTS = (
-        (0, 'not played') ,
-        (1, 'loose'),
-        (2, 'draw'),
-        (3, 'win'),
+        (0, u'Не сыграна') ,
+        (1, u'Поражение'),
+        (2, u'Ничья'),
+        (3, u'Победа'),
         )
     plays_white = models.BooleanField(blank=True)
     game_result = models.IntegerField(choices = GAME_RESULTS, default = 0)
@@ -110,6 +117,8 @@ class PlayersInGames(models.Model):
 
     class Meta:
         db_table = 'player_in_game'
+        verbose_name = u'Участник'
+        verbose_name_plural = u'Участники'
 
     @staticmethod
     def check_if_played(player1, player2, tournament_id):
@@ -131,6 +140,8 @@ class PlayersInGames(models.Model):
         else:
             return False
 
+    def __unicode__(self):
+        return u'Участник игры'
 
 
 class PlayerAddForm(forms.ModelForm):
