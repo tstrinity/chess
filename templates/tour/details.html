@@ -10,7 +10,7 @@
         <th>Участник 1</th>
         <th>Резульатат</th>
         <th>Участник 2</th>
-        <th class="nosort">Введите результат</th>
+        <th class="nosort"></th>
         </thead>
         <tbody>
             {% for game in info %}
@@ -29,6 +29,7 @@
                     {% get_player_figure game.players_info.1.plays_white %}
                 </td>
                 {% if not game.finished %}
+                {% if user.is_authenticated %}
                 <td>
                 <form action="/games/setWinner/{{ game.id }}/" method="post">
                 {% csrf_token %}
@@ -40,6 +41,7 @@
                 </select>
                 </form>
                 </td>
+                {% endif %}
                 {% endif %}
             </tr>
             {% endfor %}

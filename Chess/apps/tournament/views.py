@@ -1,4 +1,5 @@
 from django.core.exceptions import ValidationError
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.template.context import RequestContext
@@ -7,8 +8,17 @@ from Chess.apps.player.models import PlayerAddForm, ManyPlayersAddForm, PlayersI
 from django.contrib.auth.decorators import login_required
 
 def index(request):
+    info  = Tournament.get_all_info(started=True)
+    paginator = Paginator(info, 12)
+    page = request.GET.get('page')
+    try:
+        info = paginator.page(page)
+    except PageNotAnInteger:
+        info = paginator.page(1)
+    except EmptyPage:
+        info = paginator.page(paginator.num_pages)
     return render_to_response('tournament/index.html',
-        {'info' : Tournament.get_all_info(started=True)},
+        {'info' :info},
         context_instance=RequestContext(request)
     )
 
@@ -22,6 +32,14 @@ def details(request, tournament_id):
 
 def ratings(request, tournament_id):
     info = get_object_or_404(Tournament, pk = tournament_id).get_players_ratings()
+    paginator = Paginator(info, 12)
+    page = request.GET.get('page')
+    try:
+        info = paginator.page(page)
+    except PageNotAnInteger:
+        info = paginator.page(1)
+    except EmptyPage:
+        info = paginator.page(paginator.num_pages)
     return render_to_response('tournament/ratings.html',
         {'info' : info}
         , context_instance=RequestContext(request)

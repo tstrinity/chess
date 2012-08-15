@@ -204,6 +204,7 @@ img.aligncenter {
 .post .title {
 	padding-top: 10px;
 	letter-spacing: -2px;
+    margin-bottom: 10px;
 }
 
 .post .title a {
@@ -247,6 +248,7 @@ img.aligncenter {
     height: 100%;
 	padding: 0px 0px 0px 0px;
     background-color: white;
+    border-right: 5px solid #000000;
 }
 
 #sidebar ul {
@@ -469,4 +471,27 @@ input[type="text"]:focus {
 
 .right_panel {
     float: left; margin-left: 15px;
+}
+
+.div_link:hover{
+    text-decoration: none;
+}
+
+.tournament_item {
+    width: 90px;
+    height: 90px;
+    border-radius: 3px;
+    background-color: #ff4821;
+    border: 2px solid #ff4821;
+    color: #000000;
+    text-align: center;
+    vertical-align: middle;
+    display: inline-block;
+    margin : 10px;
+}
+
+.pagination {
+    color: #000000;
+    font-weight: bold;
+    margin-bottom: 20px;
 }

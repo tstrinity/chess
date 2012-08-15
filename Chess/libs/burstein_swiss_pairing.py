@@ -20,6 +20,8 @@ class BursteinSwissPairing():
         i = 1
         while len(group) > 1:
             if i == len(group):
+                #в группе нет игрока с которым текущий рассматриваемый
+                #игрок может сыграть партию
                 return False
             if not PlayersInGames.check_if_played(group[0].player, group[-i].player, self.__tour.tournament_id):
                 p1_in_t = PlayersInTournament.objects.get(player_id = group[0].player.id,
@@ -30,8 +32,13 @@ class BursteinSwissPairing():
                     self.__create_game(group[0].player, group[-i].player,  self.__get_p1_color(group[0], group[-i]))
                     group.remove(group[0])
                     group.remove(group[-i])
+                    i = 1
             else:
                 i += 1
+        if len(group) == 1:
+            self.__popped_player = group.pop()
+        return True
+
 
     def __get_p1_color(self, p1, p2):
         if abs(p1.due_color) == 2:
@@ -43,6 +50,30 @@ class BursteinSwissPairing():
         else:
             p1_white = return_if_white(p1.due_color)
             return p1_white
+
+
+    def __sort_group_by_buhgolz(self, group):
+        group_with_buhgolz = []
+        for player in group:
+            rating = get_buhgolz(
+                player = player.player,
+                tournament = self.__tour.tournament
+            )
+            group_with_buhgolz.append(
+                    {
+                    'buhgolz' : rating,
+                    'p_in_t' : player
+                }
+            )
+        sorted_players = sorted(group_with_buhgolz,
+            key= lambda item: item['buhgolz'],
+            reverse=True
+        )
+        result = []
+        for player in sorted_players:
+            result.append(player['p_in_t'])
+        return result
+
 
     def create_pairs(self):
         players = self.__tour.tournament._players.all()
@@ -56,15 +87,21 @@ class BursteinSwissPairing():
             if merge_group:
                 group += merge_group
             if len(group) > 1 or popped_player:
-                if popped_player:
-                    group.insert(0, popped_player)
-                    popped_player = None
-                    #sort_by_buhgolz(gruop)
+                if self.__popped_player:
+                    group.insert(0, self.__popped_player)
+                    self.__popped_player = None
+                    group = self.__sort_group_by_buhgolz(group)
                 if not self.__proceed_group(group):
                 #запоминаем текущую группу для дальнейшего мерджа
                     merge_group = group
+                    groups.pop(group_key)
+
             else:
-                popped_player = group.pop()
+                self.__popped_player = group.pop()
+        if len(groups.values()) == 1:
+            player = groups.values()[0]
+            p_in_t = PlayersInTournament.objects.get(player = player, tournament = self.__tour.tournament)
+            p_in_t.add_bye()
 
 
 

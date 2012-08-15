@@ -108,9 +108,9 @@ class PlayersInGames(models.Model):
         (2, u'Ничья'),
         (3, u'Победа'),
         )
-    plays_white = models.BooleanField(blank=True)
-    game_result = models.IntegerField(choices = GAME_RESULTS, default = 0)
-    player = models.ForeignKey('player.Player', related_name='_games')
+    plays_white = models.BooleanField(blank=True, verbose_name=u"Играет за белых")
+    game_result = models.IntegerField(choices = GAME_RESULTS, default = 0, verbose_name=u"Результат")
+    player = models.ForeignKey('player.Player', related_name='_games',verbose_name=u"Игрок ")
     game = models.ForeignKey('game.Game', related_name='_players')
     tournament_id = models.IntegerField(max_length=11)
 

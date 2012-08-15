@@ -33,6 +33,23 @@
             {% endfor %}
             </tbody>
         </table>
+    {% if info.has_previous or info.has_next %}
+    <div class="pagination">
+    <span class="step-links">
+        {% if info.has_previous %}
+            <a href="?page={{ info.previous_page_number }}">назад</a>
+        {% endif %}
+
+        <span class="current">
+            {{ info.number }} | {{ info.paginator.num_pages }}
+        </span>
+
+        {% if info.has_next %}
+            <a href="?page={{ info.next_page_number }}">вперед</a>
+        {% endif %}
+    </span>
+    </div>
+    {% endif %}
     </div>
 </div>
 {% endblock %}

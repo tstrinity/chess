@@ -2,6 +2,9 @@
 {% block full_content %}
     <div style="background-color: #000000;">
     <div style="vertical-align:middle;margin:0 auto; background-color: #000000;width: 175px;">
+    {% if form.errors %}
+        <p style="color:red;">Некорректные данные</p>
+    {% endif %}
     <form method="post" action="" class="login_form">
         {% csrf_token %}
         <p><label for="id_username">Имя пользователя:</label></p>

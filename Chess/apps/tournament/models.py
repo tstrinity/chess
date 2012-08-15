@@ -1,7 +1,7 @@
 # coding=utf-8
 
 from django.core.exceptions import ValidationError
-from django.db import models
+from django.db import models, transaction
 from django.db.models.aggregates import Count
 from Chess.apps.player.models import PlayersInTournament
 from Chess.libs.helpers import get_result_dic
@@ -70,7 +70,7 @@ class Tournament(models.Model):
                 players_amount = Count('_players', distinct = True))
         return result
 
-
+    #@transaction.commit_manually
     def start_tournament(self):
         """
         запуск турнира
@@ -80,7 +80,9 @@ class Tournament(models.Model):
             self.save()
             self.create_tours()
             self.start_new_tour()
+            #transaction.commit_manually()
         else:
+            #transaction.rollback()
             raise ValidationError(message=u'Меньше чем два игрока подписано на турнир')
 
 
@@ -132,6 +134,7 @@ class Tournament(models.Model):
 
 
     @timer
+    #@transaction.commit_manually
     def create_tours(self):
         """
         расчет количества туров и создание
@@ -145,6 +148,7 @@ class Tournament(models.Model):
 
 
     @timer
+    #@transaction.commit_manually
     def start_new_tour(self):
         """
         переход к следующему туру
@@ -177,6 +181,10 @@ class Tournament(models.Model):
 
 
     def sign_winners(self):
+        """
+        сортируем по набраным очкам, разбиваем по группам.
+        Группу сортируем по Бухгольцу. Выставляем места
+        """
         from Chess.libs.burstein_swiss_pairing import get_buhgolz
         all_players = PlayersInTournament.objects.filter(tournament = self)
         sorted_players = sorted(all_players, key = lambda player: player.result, reverse = True)
@@ -190,7 +198,7 @@ class Tournament(models.Model):
             for player in group:
                 rating = get_buhgolz(player = player.player, tournament = self)
                 group_with_buhgolz.append(
-                    {
+                        {
                         'buhgolz' : rating,
                         'p_in_t' : player
                     }

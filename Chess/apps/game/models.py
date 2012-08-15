@@ -41,9 +41,16 @@ class Game(models.Model):
             player = player
         )
         if plays_white:
-            player_in_tournament.due_color += 1
+            if player_in_tournament.due_color in [0,1]:
+                player_in_tournament.due_color += 1
+            else:
+                player_in_tournament.due_color = 1
         else:
-            player_in_tournament.due_color -= 1
+            if player_in_tournament.due_color in [0, -1]:
+                player_in_tournament.due_color -= 1
+            else:
+                player_in_tournament.due_color = -1
+        player_in_tournament.save()
 
 
     @timer
