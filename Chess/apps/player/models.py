@@ -51,6 +51,9 @@ class PlayersInTournament(models.Model):
 
 
     def played_with(self):
+        """
+        возвращает список игроков с которым в данном турнире играл участник
+        """
         cursor = connection.cursor()
         cursor.execute("SELECT g2.player_id FROM\
                 chess_db.player_in_game\
@@ -112,7 +115,7 @@ class PlayersInGames(models.Model):
     game_result = models.IntegerField(choices = GAME_RESULTS, default = 0, verbose_name=u"Результат")
     player = models.ForeignKey('player.Player', related_name='_games',verbose_name=u"Игрок ")
     game = models.ForeignKey('game.Game', related_name='_players')
-    tournament_id = models.IntegerField(max_length=11)
+    tournament_id = models.IntegerField(max_length=11, db_index=True)
 
 
     class Meta:
@@ -122,6 +125,9 @@ class PlayersInGames(models.Model):
 
     @staticmethod
     def check_if_played(player1, player2, tournament_id):
+        """
+        возращает играли ли в турнире игроки
+        """
         cursor = connection.cursor()
         cursor.execute("SELECT count(*) FROM\
                 chess_db.player_in_game\
@@ -131,8 +137,7 @@ class PlayersInGames(models.Model):
                 WHERE chess_db.player_in_game.tournament_id = %s AND\
                 chess_db.player_in_game.player_id in (%s,%s) AND\
                 g2.player_id IN (%s,%s);" ,
-        [tournament_id, player1.id, player2.id,
-         player1.id, player2.id]
+        [tournament_id, player1.id, player2.id, player1.id, player2.id]
         )
         result = get_result_dic(cursor)
         if result[0]['count(*)'] > 0:

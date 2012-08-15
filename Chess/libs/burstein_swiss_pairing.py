@@ -41,6 +41,9 @@ class BursteinSwissPairing():
 
 
     def __get_p1_color(self, p1, p2):
+        """
+        возврщет цвет фигуры первого игрока
+        """
         if abs(p1.due_color) == 2:
             p1_white = return_if_white(p1.due_color)
             return p1_white
@@ -53,6 +56,9 @@ class BursteinSwissPairing():
 
 
     def __sort_group_by_buhgolz(self, group):
+        """
+        сортирует группу по Бухгольцу
+        """
         group_with_buhgolz = []
         for player in group:
             rating = get_buhgolz(
@@ -76,9 +82,12 @@ class BursteinSwissPairing():
 
 
     def create_pairs(self):
+        """
+        паблик метод для создания игр
+        """
         players = self.__tour.tournament._players.all()
         groups = create_sub_groups(players)
-        #получаем список отсортированных по убыванию ключей груп
+        #получаем список отсортированных по убыванию ключей групп
         group_keys = sorted(groups.keys(), reverse = True)
         popped_player = None
         merge_group = None
@@ -98,6 +107,7 @@ class BursteinSwissPairing():
 
             else:
                 self.__popped_player = group.pop()
+        #если остался один игрок даем ему бай
         if len(groups.values()) == 1:
             player = groups.values()[0]
             p_in_t = PlayersInTournament.objects.get(player = player, tournament = self.__tour.tournament)

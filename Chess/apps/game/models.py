@@ -29,6 +29,9 @@ class Game(models.Model):
 
     @timer
     def add_player(self, player, plays_white):
+        """
+        добавляет участника в игру, и меняет его предпочтительный цвет
+        """
         player_in_game = PlayersInGames(
             game = self,
             player = player,
@@ -55,6 +58,9 @@ class Game(models.Model):
 
     @timer
     def get_game_data(self):
+        """
+        возвращает данные об игре
+        """
         players = self.signed_players.all()
         cursor = connection.cursor()
         cursor.execute("SELECT\
@@ -73,6 +79,10 @@ class Game(models.Model):
 
     @timer
     def set_match_result(self, result):
+        """
+        выставляет результат в матче
+        если все матчи в туре завершены запускает новый тур
+        """
         self.finished = True
         self.save()
         tournament = self.tour.tournament
